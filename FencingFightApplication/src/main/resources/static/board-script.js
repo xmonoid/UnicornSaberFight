@@ -40,7 +40,14 @@ function setScore(score) {
         scoreElement = null;
     }
 
-    scoreElement.innerHTML = score.newValue;
+    if (score.kind === 'score') {
+        scoreElement.innerHTML = score.newValue;
+    } else {
+        scoreElement.innerHTML = '';
+        for (var ind = 0; ind < score.newValue; ind++) {
+            scoreElement.innerHTML += "<img src='images/warning.png' alt='Предупреждение' width='50px' height='50px'>";
+        }
+    }
 }
 
 function setTime(time) {

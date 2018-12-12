@@ -1,4 +1,4 @@
-var timerId = null
+var timerId = null;
 var stompClient = null;
 
 function connect() {
@@ -8,6 +8,7 @@ function connect() {
 }
 
 function disconnect() {
+    //TODO add usage
     if (stompClient !== null) {
         stompClient.disconnect();
     }
@@ -30,6 +31,11 @@ function add_point(fighter, kind, addition) {
     }
     var score = new Number(number_field.innerHTML)
     score += addition
+
+    score = score >= 0 ? score : 0;
+
+    score = kind === 'warning' && score < 7 ? score : 6;
+
     number_field.innerHTML = score.toString()
     stompClient.send("/fencing-fight-app/secretary/change-score", {}, JSON.stringify({
         fighter: fighter,
@@ -44,6 +50,19 @@ function send_time(time) {
     }));
 }
 
+function set_disabled_all_elements_by_class(class_name) {
+    var buttons = document.getElementsByClassName(class_name);
+    $.each(buttons, function (index, button) {
+        button.setAttribute('disabled', 'disabled');
+    });
+}
+
+function delete_disabled_all_elements_by_class(class_name) {
+    var buttons = document.getElementsByClassName(class_name);
+    $.each(buttons, function (index, button) {
+        button.removeAttribute("disabled");
+    });
+}
 
 function default_values() {
     document.getElementById('time').innerHTML = '02:00'
@@ -55,6 +74,10 @@ function default_values() {
     document.getElementById('red-warning').innerHTML = '0'
     document.getElementById('blue-score').innerHTML = '0'
     document.getElementById('blue-warning').innerHTML = '0'
+
+    set_disabled_all_elements_by_class('add_button');
+    set_disabled_all_elements_by_class('start_stop_time');
+    delete_disabled_all_elements_by_class('name')
 }
 
 $(document).ready(function() {
@@ -64,7 +87,6 @@ $(document).ready(function() {
 
 function pressed_timer(button) {
     if (button.value == 'Старт время') {
-        button.value = 'Стоп время'
         start_countdown()
     } else {
         button.value = 'Старт время'
@@ -72,8 +94,7 @@ function pressed_timer(button) {
     }
 }
 
-function start_countdown() {
-
+function countdown_step() {
     var timer = document.getElementById('time')
     var time = timer.innerHTML
     var arr = time.split(':')
@@ -101,12 +122,19 @@ function start_countdown() {
     var result = min + ':' + sec
     send_time(result)
     timer.innerHTML = result
+}
 
-    timerId = setTimeout(start_countdown, 1000)
+function start_countdown() {
+    document.getElementById('start_stop_time_button').value = 'Стоп время';
+    set_disabled_all_elements_by_class('start_stop_fight');
+    //countdown_step(); TODO find better solution
+    timerId = setInterval(countdown_step, 1000);
 }
 
 function stop_countdown() {
-    clearTimeout(timerId)
+    document.getElementById('start_stop_time_button').value = 'Старт время';
+    delete_disabled_all_elements_by_class('start_stop_fight');
+    clearInterval(timerId)
 }
 
 function add_time(value) {
@@ -188,13 +216,27 @@ function add_time(value) {
     timer.innerHTML = result
 }
 
+function stop_fight(button) {
+    default_values();
+    button.value = 'Начать бой';
+    send_time('00:00');
+}
+
 function start_stop_fight() {
     var button = document.getElementById('start_stop_fight_button')
     if (button.value == 'Закончить бой') {
-        stop_countdown()
-        default_values()
-        button.value = 'Начать бой'
+        var timer = document.getElementById('time')
+        if (timer !== '00:00') {
+            var dialog = document.getElementById('stop_fight_dialog');
+            dialog.showModal();
+        } else {
+            stop_fight(button);
+        }
     } else {
+
+        delete_disabled_all_elements_by_class('add_button');
+        delete_disabled_all_elements_by_class('start_stop_time');
+        set_disabled_all_elements_by_class('name');
 
         stompClient.send("/fencing-fight-app/secretary/set-names", {}, JSON.stringify({
             redName: document.getElementById('red_name').value,
@@ -224,5 +266,13 @@ function start_stop_fight() {
         }));
 
         button.value = 'Закончить бой'
+    }
+}
+
+function set_stop_fight(stop_fight_value) {
+    var dialog = document.getElementById('stop_fight_dialog');
+    dialog.close();
+    if (stop_fight_value) {
+        stop_fight()
     }
 }
