@@ -74,7 +74,7 @@ function start_countdown() {
     var sec = new Number(arr[1])
     if (sec == 0) {
         if (min == 0) {
-            stop_time()
+            stop_countdown()
             return
         } else {
             min--
