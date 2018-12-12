@@ -196,6 +196,33 @@ function start_stop_fight() {
         button.value = 'Начать бой'
     } else {
 
+        stompClient.send("/fencing-fight-app/secretary/set-names", {}, JSON.stringify({
+            redName: document.getElementById('red_name').value,
+            blueName: document.getElementById('blue_name').value
+        }));
+        send_time(document.getElementById('time').innerHTML)
+
+        stompClient.send("/fencing-fight-app/secretary/change-score", {}, JSON.stringify({
+            fighter: 'red',
+            kind: 'score',
+            newValue: document.getElementById('red-score').innerHTML
+        }));
+        stompClient.send("/fencing-fight-app/secretary/change-score", {}, JSON.stringify({
+            fighter: 'red',
+            kind: 'warning',
+            newValue: document.getElementById('red-score').innerHTML
+        }));
+        stompClient.send("/fencing-fight-app/secretary/change-score", {}, JSON.stringify({
+            fighter: 'blue',
+            kind: 'score',
+            newValue: document.getElementById('red-score').innerHTML
+        }));
+        stompClient.send("/fencing-fight-app/secretary/change-score", {}, JSON.stringify({
+            fighter: 'blue',
+            kind: 'warning',
+            newValue: document.getElementById('red-score').innerHTML
+        }));
+
         button.value = 'Закончить бой'
     }
 }

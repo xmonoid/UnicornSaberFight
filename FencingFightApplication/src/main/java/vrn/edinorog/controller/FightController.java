@@ -5,6 +5,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
 import vrn.edinorog.dto.ChangeScoreDto;
+import vrn.edinorog.dto.NamesDto;
 import vrn.edinorog.dto.TimeDto;
 
 @Controller
@@ -20,5 +21,11 @@ public class FightController {
     @SendTo("/fight-information/fencing-fight-app/board/change-time")
     public TimeDto changeTime(TimeDto timeDto) {
         return timeDto;
+    }
+
+    @MessageMapping("/secretary/set-names")
+    @SendTo("/fight-information/fencing-fight-app/board/set-names")
+    public NamesDto setNames(NamesDto namesDto) {
+        return namesDto;
     }
 }

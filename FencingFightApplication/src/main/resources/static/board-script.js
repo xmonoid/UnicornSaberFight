@@ -10,6 +10,9 @@ function connect() {
         stompClient.subscribe('/fight-information/fencing-fight-app/board/change-time', function (time) {
             setTime(JSON.parse(time.body));
         });
+        stompClient.subscribe('/fight-information/fencing-fight-app/board/set-names', function (names) {
+            setNames(JSON.parse(names.body));
+        });
     });
 }
 
@@ -43,6 +46,13 @@ function setScore(score) {
 function setTime(time) {
     var timer = document.getElementById('time')
     timer.innerHTML = time.time
+}
+
+function setNames(names) {
+    var red = document.getElementById('red-name')
+    red.innerHTML = names.redName
+    var blue = document.getElementById('blue-name')
+    blue.innerHTML = names.blueName
 }
 
 $(document).ready(function() {
