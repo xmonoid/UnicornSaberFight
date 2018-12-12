@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <title>Fencing Fight Board Page</title>
     <link rel="stylesheet" href="board-style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="board-script.js"></script>
 </head>
 <body>
     <h1>Fencing Fight Board Page</h1>
@@ -14,7 +18,10 @@
                     <p class="name">Брюс Ли</p>
                 </div>
                 <div class="score_div">
-                    <p class="score">8</p>
+                    <p id="red-score" class="score" id="red-score">8</p>
+                </div>
+                <div class="warning_div">
+                    <p id="red-warning" class="warning" id="red-warning">0</p>
                 </div>
             </td>
             <td class="center_column">
@@ -29,7 +36,10 @@
                     <p class="name">Чак Норрис</p>
                 </div>
                 <div class="score_div">
-                    <p class="score">4</p>
+                    <p id="blue-score" class="score">4</p>
+                </div>
+                <div class="warning_div">
+                    <p id="blue-warning" class="warning">0</p>
                 </div>
             </td>
         </tr>

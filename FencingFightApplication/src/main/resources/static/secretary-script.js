@@ -1,4 +1,17 @@
 var timerId = null
+var stompClient = null;
+
+function connect() {
+    var socket = new SockJS('http://localhost:8080/fencing-fight-app-websocket');
+    stompClient = Stomp.over(socket);
+    stompClient.connect({}, function (frame) {});
+}
+
+function disconnect() {
+    if (stompClient !== null) {
+        stompClient.disconnect();
+    }
+}
 
 function add_point(fighter, kind, addition) {
     var number_field
@@ -18,6 +31,11 @@ function add_point(fighter, kind, addition) {
     var score = new Number(number_field.innerHTML)
     score += addition
     number_field.innerHTML = score.toString()
+    stompClient.send("/fencing-fight-app/secretary/change-score", {}, JSON.stringify({
+        fighter: fighter,
+        kind: kind,
+        newValue: score
+    }));
 }
 
 function default_values() {
@@ -34,6 +52,7 @@ function default_values() {
 
 $(document).ready(function() {
     default_values()
+    connect()
 });
 
 function pressed_timer(button) {
