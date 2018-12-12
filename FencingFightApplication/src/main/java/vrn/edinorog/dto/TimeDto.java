@@ -11,9 +11,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class ChangeScoreDto {
+public class TimeDto {
 
-    private String fighter;
-    private String kind;
-    private int newValue;
+    private String time;
 }

@@ -38,6 +38,13 @@ function add_point(fighter, kind, addition) {
     }));
 }
 
+function send_time(time) {
+    stompClient.send("/fencing-fight-app/secretary/change-time", {}, JSON.stringify({
+        time: time
+    }));
+}
+
+
 function default_values() {
     document.getElementById('time').innerHTML = '02:00'
     document.getElementById('start_stop_time_button').value = 'Старт время'
@@ -91,7 +98,10 @@ function start_countdown() {
         sec = '0' + sec
     }
 
-    timer.innerHTML = min + ':' + sec
+    var result = min + ':' + sec
+    send_time(result)
+    timer.innerHTML = result
+
     timerId = setTimeout(start_countdown, 1000)
 }
 
@@ -172,7 +182,10 @@ function add_time(value) {
     if (sec < 10) {
         sec = '0' + sec
     }
-    timer.innerHTML = min + ':' + sec
+
+    var result = min + ':' + sec
+    send_time(result)
+    timer.innerHTML = result
 }
 
 function start_stop_fight() {

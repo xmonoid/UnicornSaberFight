@@ -7,6 +7,9 @@ function connect() {
         stompClient.subscribe('/fight-information/fencing-fight-app/board/change-score', function (score) {
             setScore(JSON.parse(score.body));
         });
+        stompClient.subscribe('/fight-information/fencing-fight-app/board/change-time', function (time) {
+            setTime(JSON.parse(time.body));
+        });
     });
 }
 
@@ -35,6 +38,11 @@ function setScore(score) {
     }
 
     scoreElement.innerHTML = score.newValue;
+}
+
+function setTime(time) {
+    var timer = document.getElementById('time')
+    timer.innerHTML = time.time
 }
 
 $(document).ready(function() {
