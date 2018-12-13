@@ -34,7 +34,9 @@ function add_point(fighter, kind, addition) {
 
     score = score >= 0 ? score : 0;
 
-    score = kind === 'warning' && score < 7 ? score : 6;
+    if (kind === 'warning') {
+        score = score < 7 ? score : 6;
+    }
 
     number_field.innerHTML = score.toString()
     stompClient.send("/fencing-fight-app/secretary/change-score", {}, JSON.stringify({
