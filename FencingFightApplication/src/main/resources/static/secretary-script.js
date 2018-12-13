@@ -227,8 +227,8 @@ function stop_fight(button) {
 function start_stop_fight() {
     var button = document.getElementById('start_stop_fight_button')
     if (button.value == 'Закончить бой') {
-        var timer = document.getElementById('time')
-        if (timer !== '00:00') {
+        var timer = document.getElementById('time');
+        if (timer.innerHTML !== '00:00') {
             var dialog = document.getElementById('stop_fight_dialog');
             dialog.showModal();
         } else {
