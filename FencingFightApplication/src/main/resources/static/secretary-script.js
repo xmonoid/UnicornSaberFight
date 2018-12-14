@@ -1,5 +1,7 @@
 var timerId = null;
 var stompClient = null;
+var canEditScore = false;
+var disableKeypressHandling = false;
 
 function connect() {
     var socket = new SockJS(window.location.origin + '/fencing-fight-app-websocket');
@@ -95,9 +97,67 @@ function default_values() {
     set_disabled_all_elements_by_class('add_button');
     set_disabled_all_elements_by_class('start_stop_time');
     delete_disabled_all_elements_by_class('name')
+
+    canEditScore = false;
 }
 
 $(document).ready(function() {
+    $("body").keyup(function(evt) {
+        if (evt.which === 192 && disableKeypressHandling) {
+            disableKeypressHandling = false;
+        } else if (evt.which === 192 && !disableKeypressHandling) {
+            disableKeypressHandling = true;
+        } else if (disableKeypressHandling) {
+            return;
+        }
+
+        if (!canEditScore) {
+            return
+        }
+
+        switch (evt.which) {
+            // case 32: //space bar
+            //     pressed_timer(document.getElementById('start_stop_time_button'));
+            //     break;
+            case 81: // q
+                add_point('blue', 'score', 1);
+                break;
+            case 65: // a
+                add_point('blue', 'score', -1);
+                break;
+            case 69: // e
+                add_point('red', 'score', 1);
+                break;
+            case 68: // d
+                add_point('red', 'score', -1);
+                break;
+            case 84: // t
+                add_mutual_hit(1);
+                break;
+            case 71: // g
+                add_mutual_hit(-1);
+                break;
+
+            case 73: // i
+                add_time(1);
+                break;
+            case 85: // u
+                add_time(-1);
+                break;
+            case 75: // k
+                add_time(10);
+                break;
+            case 74: // j
+                add_time(-10);
+                break;
+            case 77: // m
+                add_time(60);
+                break;
+            case 78: // n
+                add_time(-60);
+                break;
+        }
+    });
     default_values()
     connect()
 });
@@ -254,6 +314,8 @@ function start_stop_fight() {
         delete_disabled_all_elements_by_class('add_button');
         delete_disabled_all_elements_by_class('start_stop_time');
         set_disabled_all_elements_by_class('name');
+        canEditScore = true;
+
 
         stompClient.send("/fencing-fight-app/secretary/set-names", {}, JSON.stringify({
             redName: document.getElementById('red_name').value,
@@ -290,6 +352,6 @@ function set_stop_fight(stop_fight_value) {
     var dialog = document.getElementById('stop_fight_dialog');
     dialog.close();
     if (stop_fight_value) {
-        stop_fight()
+        stop_fight(document.getElementById('start_stop_fight_button'));
     }
 }
