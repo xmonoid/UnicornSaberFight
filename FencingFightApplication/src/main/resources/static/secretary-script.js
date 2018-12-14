@@ -290,6 +290,6 @@ function set_stop_fight(stop_fight_value) {
     var dialog = document.getElementById('stop_fight_dialog');
     dialog.close();
     if (stop_fight_value) {
-        stop_fight()
+        stop_fight(document.getElementById('start_stop_fight_button'));
     }
 }
