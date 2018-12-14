@@ -46,6 +46,20 @@ function add_point(fighter, kind, addition) {
     }));
 }
 
+function add_mutual_hit(addition) {
+    var mutual_hit_count_field = document.getElementById('mutual_hit');
+    var mutual_hit_count = new Number(mutual_hit_count_field.innerHTML);
+    mutual_hit_count += addition;
+
+    mutual_hit_count = mutual_hit_count >= 0 ? mutual_hit_count : 0;
+    mutual_hit_count = mutual_hit_count <= 4 ? mutual_hit_count : 4;
+
+    mutual_hit_count_field.innerHTML = mutual_hit_count.toString();
+    stompClient.send("/fencing-fight-app/secretary/change-mutual-hit-count", {}, JSON.stringify({
+        newMutualHitCount: mutual_hit_count
+    }));
+}
+
 function send_time(time) {
     stompClient.send("/fencing-fight-app/secretary/change-time", {}, JSON.stringify({
         time: time
@@ -70,6 +84,7 @@ function default_values() {
     document.getElementById('time').innerHTML = '02:00'
     document.getElementById('start_stop_time_button').value = 'Старт время'
     document.getElementById('start_stop_fight_button').value = 'Начать бой'
+    document.getElementById('mutual_hit').innerHTML = '0'
     document.getElementById('red_name').value = ''
     document.getElementById('blue_name').value = ''
     document.getElementById('red-score').innerHTML = '0'
