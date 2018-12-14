@@ -43,7 +43,8 @@ DIV {
 
 .score {
     text-align: center;
-    font-size: 1000%;
+    font-size: 2500%;
+    margin: 0;
 }
 
 .time_div {
@@ -53,7 +54,8 @@ DIV {
 .time {
     color: black;
     text-align: center;
-    font-size: 500%;
+    font-size: 800%;
+    margin: 0;
 }
 .logo {
     background: url(images/logo.jpg) no-repeat center/cover;
@@ -63,4 +65,7 @@ DIV {
 
 .warning_div {
     height: 70px;
+}
+.warning {
+    text-align: center;
 }
