@@ -16,7 +16,11 @@ function disconnect() {
     }
 }
 
-function add_point(fighter, kind, addition) {
+function add_point(fighter, kind, addition, evt) {
+    if (evt && evt.screenX === 0 && evt.screenY === 0) {
+        return;
+    }
+
     var number_field
     if (fighter == 'red') {
         if (kind == 'score') {
@@ -48,7 +52,11 @@ function add_point(fighter, kind, addition) {
     }));
 }
 
-function add_mutual_hit(addition) {
+function add_mutual_hit(addition, evt) {
+    if (evt && evt.screenX === 0 && evt.screenY === 0) {
+        return;
+    }
+
     var mutual_hit_count_field = document.getElementById('mutual_hit');
     var mutual_hit_count = new Number(mutual_hit_count_field.innerHTML);
     mutual_hit_count += addition;
@@ -102,7 +110,9 @@ function default_values() {
 }
 
 $(document).ready(function() {
-    $("body").keyup(function(evt) {
+    default_values();
+    connect();
+    $('body').keyup(function(evt) {
         if (evt.which === 192 && disableKeypressHandling) {
             disableKeypressHandling = false;
         } else if (evt.which === 192 && !disableKeypressHandling) {
@@ -116,9 +126,9 @@ $(document).ready(function() {
         }
 
         switch (evt.which) {
-            // case 32: //space bar
-            //     pressed_timer(document.getElementById('start_stop_time_button'));
-            //     break;
+            case 32: //space bar
+                pressed_timer(document.getElementById('start_stop_time_button'));
+                break;
             case 81: // q
                 add_point('blue', 'score', 1);
                 break;
@@ -158,11 +168,13 @@ $(document).ready(function() {
                 break;
         }
     });
-    default_values()
-    connect()
 });
 
-function pressed_timer(button) {
+function pressed_timer(button, evt) {
+    if (evt && evt.screenX === 0 && evt.screenY === 0) {
+        return;
+    }
+
     if (button.value == 'Старт время') {
         start_countdown()
     } else {
@@ -214,7 +226,11 @@ function stop_countdown() {
     clearInterval(timerId)
 }
 
-function add_time(value) {
+function add_time(value, evt) {
+    if (evt && evt.screenX === 0 && evt.screenY === 0) {
+        return;
+    }
+
     var timer = document.getElementById('time')
     var time = timer.innerHTML
     var arr = time.split(':')
@@ -299,12 +315,17 @@ function stop_fight(button) {
     send_time('00:00');
 }
 
-function start_stop_fight() {
+function start_stop_fight(evt) {
+    if (evt && evt.screenX === 0 && evt.screenY === 0) {
+        return;
+    }
+
     var button = document.getElementById('start_stop_fight_button')
     if (button.value == 'Закончить бой') {
         var timer = document.getElementById('time');
         if (timer.innerHTML !== '00:00') {
             var dialog = document.getElementById('stop_fight_dialog');
+            canEditScore = false;
             dialog.showModal();
         } else {
             stop_fight(button);
@@ -350,6 +371,7 @@ function start_stop_fight() {
 
 function set_stop_fight(stop_fight_value) {
     var dialog = document.getElementById('stop_fight_dialog');
+    canEditScore = true;
     dialog.close();
     if (stop_fight_value) {
         stop_fight(document.getElementById('start_stop_fight_button'));
