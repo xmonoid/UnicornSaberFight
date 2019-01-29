@@ -281,6 +281,9 @@ function start_stop_fight() {
             kind: 'warning',
             newValue: document.getElementById('red-score').innerHTML
         }));
+        stompClient.send("/fencing-fight-app/secretary/change-mutual-hit-count", {}, JSON.stringify({
+            newMutualHitCount: document.getElementById('mutual_hit').innerHTML
+        }));
 
         button.value = 'Закончить бой'
     }
