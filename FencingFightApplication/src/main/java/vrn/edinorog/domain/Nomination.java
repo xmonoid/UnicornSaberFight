@@ -3,11 +3,7 @@ package vrn.edinorog.domain;
 import lombok.*;
 import vrn.edinorog.enums.CompetitionStage;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @NoArgsConstructor(force = true)
@@ -25,9 +21,11 @@ public class Nomination {
 
     private final String name;
 
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
     @Setter
     private CompetitionStage currentStage;
 
     @Setter
-    private int currentRoundIndex;
+    private Integer currentRoundIndex;
 }

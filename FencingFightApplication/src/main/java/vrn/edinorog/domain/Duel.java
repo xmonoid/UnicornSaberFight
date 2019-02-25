@@ -8,13 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 import vrn.edinorog.enums.CompetitionStage;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Entity
 @NoArgsConstructor(force = true)
@@ -46,6 +40,8 @@ public class Duel {
     @JoinColumn(name = "NOMINATION_ID")
     private final Nomination nomination;
 
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
     private final CompetitionStage currentStage;
 
     private final int currentRoundIndex;
@@ -56,8 +52,12 @@ public class Duel {
     private Integer blueScore;
     @Setter
     private Integer mutualHitCount;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
     @Setter
     private Winner winner;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 12)
     @Setter
     private DuelStatus duelStatus;
     @Setter

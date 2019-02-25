@@ -38,8 +38,12 @@ public class Fighter {
 
     @Setter
     private Integer points;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 10)
     @Setter
     private Achievement isPrizeWinner;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 10)
     @Setter
     private Achievement hasCup;
     @Setter
