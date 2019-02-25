@@ -38,10 +38,12 @@ public class Duel {
     @JoinColumn(name = "BLUE_FIGHTER_ID")
     private final Fighter blueFighter;
 
-    private final Integer duelId;
+    private final Integer duelGroupId;
 
     private final Integer duelRound;
 
+    @ManyToOne
+    @JoinColumn(name = "NOMINATION_ID")
     private final Nomination nomination;
 
     private final CompetitionStage currentStage;
