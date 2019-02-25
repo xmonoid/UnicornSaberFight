@@ -1,10 +1,7 @@
 package vrn.edinorog.domain;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
+import vrn.edinorog.enums.CompetitionStage;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,13 +14,20 @@ import javax.persistence.Id;
 @RequiredArgsConstructor
 @Getter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Nomination {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "NOMINATION_ID")
+    @EqualsAndHashCode.Include
     private Long id;
 
     private final String name;
+
+    @Setter
+    private CompetitionStage currentStage;
+
+    @Setter
+    private int currentRoundIndex;
 }

@@ -7,13 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.util.Set;
 
 @Entity
@@ -21,12 +15,13 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Getter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Fighter {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "FIGHTER_ID")
+    @EqualsAndHashCode.Include
     private Long id;
 
     private final String firstName;
@@ -35,6 +30,7 @@ public class Fighter {
     private final Boolean sex; // true is male, false is female
     private final Long birthDate; // Unix date time
     private final String club;
+    private final String city;
 
     @ManyToMany
     @JoinColumn(name = "NOMINATION_ID")
@@ -43,7 +39,27 @@ public class Fighter {
     @Setter
     private Integer points;
     @Setter
-    private Boolean isPrizeWinner;
+    private Achievement isPrizeWinner;
     @Setter
-    private Boolean hasCup;
+    private Achievement hasCup;
+    @Setter
+    private Boolean isActive = true; // it is false when a fighter has at least one fight, but he cannot continue to take part
+
+    @Setter
+    @Transient
+    private Set<String> fighterIdFromTheSameClub;
+
+    @Setter
+    @Transient
+    private Set<String> rivalIds;
+
+    public enum Achievement {
+
+        GOLD,
+        SILVER,
+        BRONZE,
+        PLAY_OFF,
+        NONE
+
+    }
 }

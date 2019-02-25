@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import vrn.edinorog.enums.CompetitionStage;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,12 +21,13 @@ import javax.persistence.ManyToOne;
 @RequiredArgsConstructor
 @Getter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Duel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "DUEL_ID")
+    @EqualsAndHashCode.Include
     private Long id;
 
     @ManyToOne
@@ -36,19 +38,43 @@ public class Duel {
     @JoinColumn(name = "BLUE_FIGHTER_ID")
     private final Fighter blueFighter;
 
-    private final Integer roundId;
+    private final Integer duelId;
+
+    private final Integer duelRound;
+
+    private final Nomination nomination;
+
+    private final CompetitionStage currentStage;
+
+    private final int currentRoundIndex;
 
     @Setter
     private Integer redScore;
     @Setter
     private Integer blueScore;
     @Setter
+    private Integer mutualHitCount;
+    @Setter
     private Winner winner;
+    @Setter
+    private DuelStatus duelStatus;
+    @Setter
+    private Integer ringNumber;
+    @Setter
+    private Integer orderNumber;
 
     public enum Winner {
         RED,
         BLUE,
+        RED_TECHNICAL_WIN,
+        BLUE_TECHNICAL_WIN,
         DRAW,
-        MUTUAL_DEFEAT
+        MUTUAL_DEFEAT,
+    }
+
+    public enum DuelStatus {
+        UNFINISHED,
+        FINISHED,
+        CANCELED
     }
 }
