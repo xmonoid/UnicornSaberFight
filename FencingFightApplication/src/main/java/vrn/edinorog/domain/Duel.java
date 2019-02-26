@@ -60,10 +60,6 @@ public class Duel {
     @Column(length = 12)
     @Setter
     private DuelStatus duelStatus;
-    @Setter
-    private Integer ringNumber;
-    @Setter
-    private Integer orderNumber;
 
     public enum Winner {
         RED,

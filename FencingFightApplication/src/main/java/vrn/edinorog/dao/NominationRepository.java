@@ -7,6 +7,9 @@ import org.springframework.data.repository.query.Param;
 import vrn.edinorog.domain.Nomination;
 import vrn.edinorog.enums.CompetitionStage;
 
+import java.util.List;
+import java.util.Set;
+
 public interface NominationRepository extends JpaRepository<Nomination, Long> {
 
     @Modifying
@@ -22,5 +25,14 @@ public interface NominationRepository extends JpaRepository<Nomination, Long> {
             @Param("currentStage") CompetitionStage competitionStage,
             @Param("currentRoundIndex") Integer currentRoundIndex
     );
+
+
+    @Query("select id from Nomination")
+    Set<Long> findAllIds();
+
+    @Modifying
+    @Query(value = "delete from Fighter_Nominations " +
+            "where nominations_nomination_id = :nominationId", nativeQuery = true)
+    void deleteAllFighterLinksOfNomination(@Param("nominationId") Long nominationId);
 
 }

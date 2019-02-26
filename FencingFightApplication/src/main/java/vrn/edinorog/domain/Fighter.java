@@ -41,11 +41,11 @@ public class Fighter {
     @Enumerated(EnumType.STRING)
     @Column(length = 10)
     @Setter
-    private Achievement isPrizeWinner;
+    private Achievement medalAchievement;
     @Enumerated(EnumType.STRING)
     @Column(length = 10)
     @Setter
-    private Achievement hasCup;
+    private Achievement cupAchievement;
     @Setter
     private Boolean isActive = true; // it is false when a fighter has at least one fight, but he cannot continue to take part
 

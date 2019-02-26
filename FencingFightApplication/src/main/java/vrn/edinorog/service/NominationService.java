@@ -7,7 +7,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import vrn.edinorog.dao.DuelRepository;
 import vrn.edinorog.dao.NominationRepository;
+import vrn.edinorog.domain.Duel;
 import vrn.edinorog.domain.Nomination;
 import vrn.edinorog.enums.CompetitionStage;
 
@@ -19,6 +21,7 @@ import java.util.List;
 public class NominationService {
 
     private final NominationRepository nominationRepository;
+    private final DuelRepository duelRepository;
 
     public List<Nomination> getAllNominations() {
         log.debug("#getAllNominations()");
@@ -29,7 +32,7 @@ public class NominationService {
     public void addNewNomination(Nomination nomination) {
         log.debug("#addNewNomination(Nomination nomination): {}", nomination);
         Assert.notNull(nomination, "Nomination must be not null!");
-        nominationRepository.saveAndFlush(nomination);
+        nominationRepository.save(nomination);
     }
 
     @Transactional
@@ -58,10 +61,22 @@ public class NominationService {
     }
 
     @Transactional
-    public void deleteNomination(Long nominationId) {
+    public void deleteNomination(Long nominationId, boolean cascadeDelete) {
         log.debug("#deleteNomination(Long nominationId): {}, {}", nominationId);
         Assert.notNull(nominationId, "Nomination id must be not null!");
-        nominationRepository.deleteById(nominationId);
+
+        if (cascadeDelete) {
+            Nomination nomination = nominationRepository.getOne(nominationId);
+
+            List<Duel> duels = duelRepository.findByNomination(nomination);
+            duelRepository.deleteInBatch(duels);
+
+            nominationRepository.deleteAllFighterLinksOfNomination(nominationId);
+            nominationRepository.deleteById(nominationId);
+        } else {
+            nominationRepository.deleteAllFighterLinksOfNomination(nominationId);
+            nominationRepository.deleteById(nominationId);
+        }
     }
 
 }
