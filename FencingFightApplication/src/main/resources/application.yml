@@ -1,0 +1,17 @@
+
+spring:
+  h2:
+    console:
+      enabled: true # Gives us access to the H2 database web console
+      path: /h2 # URL path to the web console
+      settings.web-allow-others: true # Gives an access to the H2 database web console for remote clients
+  datasource:
+    url: jdbc:h2:file:~/dbFile
+    username: sa
+    password:
+    driverClassName: org.h2.Driver
+  jpa:
+    show_sql: true # Shows the SQL in console
+    hibernate:
+      ddl-auto: update # Generates the database *only* if it's not there yet
+      dialect: org.hibernate.dialect.H2Dialect
