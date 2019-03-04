@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Management Page</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../external/jquery.bootgrid-1.3.1/jquery.bootgrid.min.css">
+</head>
+<body>
+
+    <br>
+    <div class="container">
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="active"><a href="#nominations" role="tab" data-toggle="tab">Номинации</a></li>
+            <li><a href="#fighters" role="tab" data-toggle="tab">Участники</a></li>
+        </ul>
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active fade in" id="nominations">
+                <table id="nominations-table" class="table table-condensed table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th data-visible="false" data-column-id="id" data-type="numeric">Id</th>
+                        <th data-visible="false" data-column-id="order" data-type="numeric">Order</th>
+                        <th data-column-id="name" data-sortable="false">Name</th>
+                        <th data-column-id="currentStage" data-sortable="false">Current stage</th>
+                        <th data-column-id="currentRoundIndex" data-type="numeric" data-sortable="false">Current round index</th>
+                        <th data-column-id="commands" data-formatter="commands" data-sortable="false"></th>
+                    </tr>
+                    </thead>
+                    <tbody id="nominations-body"></tbody>
+                </table>
+                <button id="testBtn" class="btn">Test</button>
+                <button id="testBtnSort" class="btn">Sort</button>
+                <button id="show-dialog" class="btn">Добавить</button>
+
+                <div id="addNomination" class="modal fade" tabindex="-1">
+                    <div class="modal-dialog modal-sm">
+                        <div class="modal-content">
+                            <form class="form">
+                                <div class="form-group">
+                                    <label class="control-label" for="nomination-name">Название номинации</label>
+                                    <input type="text" class="form-control" id="nomination-name">
+                                </div>
+                                <button id="add-nomination-btn" class="btn">Добавить</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="fighters">
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="/webjars/jquery/3.3.1-1/jquery.min.js"></script>
+    <script src="/webjars/jquery-ui/1.12.1/jquery-ui.js"></script>
+    <script src="../external/jquery.bootgrid-1.3.1/jquery.bootgrid.min.js"></script>
+    <script src="/webjars/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="management-script.js"></script>
+
+    <script>
+        var table = $("#nominations-table").bootgrid({
+            navigation: 0,
+            padding: 0,
+            columnSelection: false,
+            rowCount: -1,
+            sorting: true,
+            keepSelection: false,
+            ajax: false,
+            url: "/nomination/all",
+            ajaxSettings: {
+                async: true,
+                method: "GET",
+                headers: {
+                    "content-type": "application/json",
+                    "cache-control": "no-cache"
+                },
+                processData: false
+            },
+            formatters: {
+                "commands": function(column, row)
+                {
+                    return "<button type=\"button\" class=\"btn btn-xs btn-default command-edit\"><span class=\"fa fa-pencil\"></span></button> " +
+                        "<button type=\"button\" class=\"btn btn-xs btn-default command-delete\"><span class=\"fa fa-trash-o\"></span></button>";
+                }
+            }
+        }).on("loaded.rs.jquery.bootgrid", function()
+        {
+            /* Executes after data is loaded and rendered */
+            table.find(".command-edit").on("click", function(e)
+            {
+                alert("You pressed edit on row: " + $(this).data("row-id"));
+            }).end().find(".command-delete").on("click", function(e)
+            {
+                alert("You pressed delete on row: ");
+            });
+        });
+        function getData() {
+            $.ajax({
+                "async": true,
+                "url": "/nomination/all",
+                "method": "GET",
+                "headers": {
+                    "content-type": "application/json",
+                    "cache-control": "no-cache"
+                },
+                "processData": false
+            }).done(function (response) {
+                var rows = response.data;
+                $.each(rows, function (index, elem) {
+                    elem.order = index;
+                });
+                table.bootgrid("append", rows);
+                table.bootgrid("sort", {order: "asc"});
+            })
+        }
+        $("#testBtn").click(function () {
+            table.bootgrid("clear");
+            getData();
+        });
+        $("#testBtnSort").click(function () {
+            table.bootgrid("sort", {id: "asc"});
+        });
+        $("#nominations-body").sortable({update: function (evt, ui) {
+                var rows = $("#nominations-table").bootgrid("getCurrentRows");
+                $("#nominations-body").children().each(function (index, elem){
+                    rows[$(elem).attr("data-row-id")].order = index;
+                    $(elem).attr("data-row-id", index);
+                });
+                table.bootgrid("sort", {order: "asc"});
+            }}
+        );
+        $("#add-nomination-btn").click(function () {
+            var name = $($("#nomination-name")[0])[0].value;
+            $.ajax({
+                "async": true,
+                "url": "/nomination/add",
+                "method": "POST",
+                "headers": {
+                    "content-type": "application/json",
+                    "cache-control": "no-cache"
+                },
+                "processData": false,
+                "data":JSON.stringify({
+                    "name": name
+                })
+            }).done(function (response) {
+                $('#addNomination').modal('hide');
+                table.bootgrid("clear");
+                getData();
+            })
+        });
+        $("#show-dialog").click(function () {
+            $($("#nomination-name")[0])[0].value = "";
+            $('#addNomination').modal('show');
+        });
+    </script>
+</body>
+</html>

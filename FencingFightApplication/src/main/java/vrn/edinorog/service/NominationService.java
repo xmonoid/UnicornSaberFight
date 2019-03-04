@@ -38,7 +38,7 @@ public class NominationService {
     @Transactional
     public void addNewNominations(List<Nomination> nominations) {
         log.debug("#addNewNominations(List<Nomination> nominations): {}", nominations);
-        Assert.isTrue(CollectionUtils.isNotEmpty(nominations), "Nominations must be not empty");
+        Assert.notNull(nominations, "Nominations list must be not null!");
         nominationRepository.saveAll(nominations);
     }
 

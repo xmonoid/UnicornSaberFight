@@ -8,56 +8,38 @@ import vrn.edinorog.utils.SimpleFighterGraph;
 
 import java.util.*;
 
-@Service(value = "SwissSystem")
-public class SwissSystem implements SplitFighterInterface {
+@Service
+public class SwissSystem {
 
-    @Override
-    public List<MutablePair<Fighter, Fighter>> getFighterPairs(List<Fighter> fighters, Fighter skippedRoundFighter, CompetitionStage competitionStage) {
+    public List<MutablePair<Fighter, Fighter>> getFighterPairs(List<Fighter> fighters, Fighter skippedRoundFighter, boolean isStrongSkipRound) {
         List<Fighter> tempFighters = new ArrayList<>();
-        if (true) {
-            return new ArrayList<>();
-        }
         Collections.copy(tempFighters, fighters);
-        switch (competitionStage) {
-            case INIT_STAGE:
-                return getInitStageFighterPairs(tempFighters);
-            case QUALIFYING_STAGE:
-                return getQualifyingStageFighterPairs(tempFighters, skippedRoundFighter);
-            case PLAY_OFF_STAGE:
-                return getPlayOffStageFighterPairs(fighters);
+
+        int score = tempFighters.get(0).getPoints();
+        boolean isNonRating = true;
+
+        for (Fighter fighter : tempFighters) {
+            if (score != fighter.getPoints()) {
+                isNonRating = false;
+                break;
+            }
         }
-        return null;
+
+        if (isNonRating) {
+            return getRandomFighterPairs(tempFighters);
+        } else {
+            return getByRatingFighterPairs(tempFighters, skippedRoundFighter, isStrongSkipRound);
+        }
     }
 
-    private List<MutablePair<Fighter, Fighter>> getInitStageFighterPairs(List<Fighter> fighters) {
-        List<MutablePair<Fighter, Fighter>> fightersPairs = new ArrayList<>();
+    private List<MutablePair<Fighter, Fighter>> getRandomFighterPairs(List<Fighter> fighters) {
         Collections.shuffle(fighters, new Random(new Date().getTime()));
-        for (int pairCount = 0; pairCount < fighters.size() / 2; pairCount++) {
-            Fighter redFighter = fighters.get(0);
-            Fighter blueFighter = null;
-            for (int ind = 1; ind < fighters.size(); ind++) {
-                if (!fighters.get(ind).getFighterIdFromTheSameClub().contains(redFighter.getId())) {
-                    blueFighter = fighters.get(ind);
-                }
-            }
-            if (blueFighter == null) {
-                blueFighter = fighters.get(1);
-            }
-
-            fightersPairs.add(new MutablePair<>(redFighter, blueFighter));
-
-            fighters.remove(redFighter);
-            fighters.remove(blueFighter);
-        }
-
-        if (fighters.size() > 0) {
-            fightersPairs.add(new MutablePair<>(fighters.get(0), null));
-        }
-
+        SimpleFighterGraph simpleFighterGraph = new SimpleFighterGraph(fighters, null, false);
+        List<MutablePair<Fighter, Fighter>> fightersPairs = simpleFighterGraph.getFighterPairs();
         return fightersPairs;
     }
 
-    private List<MutablePair<Fighter, Fighter>> getQualifyingStageFighterPairs(List<Fighter> fighters, Fighter skippedRoundFighter) {
+    private List<MutablePair<Fighter, Fighter>> getByRatingFighterPairs(List<Fighter> fighters, Fighter skippedRoundFighter, boolean isStrongSkipRound) {
         List<MutablePair<Fighter, Fighter>> fightersPairs = new ArrayList<>();
         if (skippedRoundFighter != null) {
             fighters.remove(skippedRoundFighter);
@@ -75,6 +57,13 @@ public class SwissSystem implements SplitFighterInterface {
         List<Integer> scores = new ArrayList<>(scoreToListFighterMap.keySet());
         Collections.sort(scores);
         Collections.reverse(scores);
+
+        Fighter fighterForSkip = null;
+
+        if (fighters.size() % 2 != 0 && isStrongSkipRound) {
+            fighterForSkip = scoreToListFighterMap.get(scores.get(0)).get(0);
+            scoreToListFighterMap.get(scores.get(0)).remove(fighterForSkip);
+        }
 
         if (skippedRoundFighter != null) {
             scoreToListFighterMap.get(scores.get(0)).add(skippedRoundFighter);
@@ -96,25 +85,15 @@ public class SwissSystem implements SplitFighterInterface {
             }
         }
 
+        if (fighterForSkip != null) {
+            fightersPairs.add(new MutablePair<>(fighterForSkip, null));
+        }
+
         for (Fighter fighter : fightersFromAnotherGroup) {
             fightersPairs.add(new MutablePair<>(fighter, null));
         }
 
         return  fightersPairs;
-    }
-
-    private List<MutablePair<Fighter, Fighter>> getPlayOffStageFighterPairs(List<Fighter> fighters) {
-        Collections.sort(fighters, Comparator.comparingInt(Fighter::getPoints));
-        Collections.reverse(fighters);
-
-        List<MutablePair<Fighter, Fighter>> fightersPairs = new ArrayList<>();
-        if (fighters.size() % 2 != 0) {
-            fightersPairs.add(new MutablePair<>(fighters.get(0), null));
-        }
-
-        SimpleFighterGraph simpleFighterGraph = new SimpleFighterGraph(fighters.subList(1, fighters.size()), null, true);
-        fightersPairs.addAll(simpleFighterGraph.getFighterPairs());
-        return fightersPairs;
     }
 
 }

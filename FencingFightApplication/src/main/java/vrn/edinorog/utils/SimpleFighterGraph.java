@@ -13,13 +13,13 @@ public class SimpleFighterGraph {
 
     List<Node> nodes;
     int countFighterFromAnotherGroup;
-    boolean playOff;
+    boolean isOlympicSystem;
 
-    public SimpleFighterGraph(List<Fighter> fighters, List<Fighter> fightersFromAnotherGroup, boolean playOff) {
+    public SimpleFighterGraph(List<Fighter> fighters, List<Fighter> fightersFromAnotherGroup, boolean isOlympicSystem) {
         if (fightersFromAnotherGroup == null) {
             fightersFromAnotherGroup = new ArrayList<>();
         }
-        this.playOff = playOff;
+        this.isOlympicSystem = isOlympicSystem;
         countFighterFromAnotherGroup = fightersFromAnotherGroup.size();
         nodes = new ArrayList<>(fighters.size() + fightersFromAnotherGroup.size());
 
@@ -31,22 +31,22 @@ public class SimpleFighterGraph {
             nodes.add(new Node(fighter, new ArrayList<>(), 0));
         }
 
-        if (playOff) {
-            fillPlayOffEdgeMatrix();
+        if (isOlympicSystem) {
+            fillOlympicSystemEdgeMatrix();
         } else {
-            fillEdgeMatrix();
+            fillSwissSystemEdgeMatrix();
         }
     }
 
     public List<MutablePair<Fighter, Fighter>> getFighterPairs() {
-        if (playOff) {
-            return getPlayOffStageFighterPairs();
+        if (isOlympicSystem) {
+            return getOlympicSystemFighterPairs();
         } else {
-            return getQualifyingStageFighterPairs();
+            return getSwissSystemFighterPairs();
         }
     }
 
-    private List<MutablePair<Fighter, Fighter>> getQualifyingStageFighterPairs() {
+    private List<MutablePair<Fighter, Fighter>> getSwissSystemFighterPairs() {
         List<MutablePair<Fighter, Fighter>> fighterPairs = new ArrayList<>();
 
         if (countFighterFromAnotherGroup > 0) {
@@ -55,7 +55,7 @@ public class SimpleFighterGraph {
             tempNodeList.addAll(nodes.subList(countFighterFromAnotherGroup, nodes.size()));
             nodes = tempNodeList;
             tempNodeList = null;
-            fillEdgeMatrix();
+            fillSwissSystemEdgeMatrix();
 
             Set<Integer> usedNodes = new HashSet<>();
             fighterPairs.addAll(getFighterPairs(nodes.subList(0, countFighterFromAnotherGroup), usedNodes));
@@ -67,19 +67,31 @@ public class SimpleFighterGraph {
                 nodes.remove(usedNodesList.get(ind).intValue());
             }
 
-            fillEdgeMatrix();
+            fillSwissSystemEdgeMatrix();
         }
 
-        Collections.sort(nodes, Comparator.comparingInt(Node::getSumWeights));
-        fillEdgeMatrix();
+        int sumWeights = nodes.get(0).getSumWeights();
+        boolean needSort = false;
+
+        for (Node node : nodes) {
+            if (sumWeights != node.getSumWeights()) {
+                needSort = true;
+                break;
+            }
+        }
+
+        if (needSort) {
+            Collections.sort(nodes, Comparator.comparingInt(Node::getSumWeights));
+            fillSwissSystemEdgeMatrix();
+        }
         fighterPairs.addAll(getFighterPairs(nodes, new HashSet<>()));
         return fighterPairs;
     }
 
-    private List<MutablePair<Fighter, Fighter>> getPlayOffStageFighterPairs() {
+    private List<MutablePair<Fighter, Fighter>> getOlympicSystemFighterPairs() {
         List<MutablePair<Fighter, Fighter>> fighterPairs = new ArrayList<>();
         Collections.sort(nodes, Comparator.comparingInt(Node::getSumWeights));
-        fillPlayOffEdgeMatrix();
+        fillOlympicSystemEdgeMatrix();
 
         for (int rowInd = 0; rowInd < nodes.size() / 2; rowInd++) {
             if (nodes.get(rowInd).getSumWeights() == 0) {
@@ -151,7 +163,7 @@ public class SimpleFighterGraph {
         return fighterPairs;
     }
 
-    private void fillEdgeMatrix() {
+    private void fillSwissSystemEdgeMatrix() {
         for (int row = 0; row < nodes.size(); row++) {
             nodes.get(row).setEdgeWeights(new ArrayList<>());
             nodes.get(row).setSumWeights(0);
@@ -171,7 +183,7 @@ public class SimpleFighterGraph {
         }
     }
 
-    private void fillPlayOffEdgeMatrix() {
+    private void fillOlympicSystemEdgeMatrix() {
         for (int row = 0; row < nodes.size() / 2; row++) {
             nodes.get(row).setEdgeWeights(new ArrayList<>());
             nodes.get(row).setSumWeights(0);

@@ -61,6 +61,46 @@ public class Duel {
     @Setter
     private DuelStatus duelStatus;
 
+    public Fighter getWinner() {
+        if (winner == null || duelStatus == null || !duelStatus.equals(DuelStatus.FINISHED)) {
+            return null;
+        }
+
+        switch (winner) {
+            case RED:
+            case RED_TECHNICAL_WIN:
+                return redFighter;
+            case BLUE:
+            case BLUE_TECHNICAL_WIN:
+                return blueFighter;
+            case DRAW:
+            case MUTUAL_DEFEAT:
+                return null;
+        }
+
+        return null;
+    }
+
+    public Fighter getLoser() {
+        if (winner == null || duelStatus == null || !duelStatus.equals(DuelStatus.FINISHED)) {
+            return null;
+        }
+
+        switch (winner) {
+            case RED:
+            case RED_TECHNICAL_WIN:
+                return blueFighter;
+            case BLUE:
+            case BLUE_TECHNICAL_WIN:
+                return redFighter;
+            case DRAW:
+            case MUTUAL_DEFEAT:
+                return null;
+        }
+
+        return null;
+    }
+
     public enum Winner {
         RED,
         BLUE,
