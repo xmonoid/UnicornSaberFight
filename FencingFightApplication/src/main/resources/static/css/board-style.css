@@ -58,7 +58,7 @@ DIV {
     margin: 0;
 }
 .logo {
-    background: url(images/logo.jpg) no-repeat center/cover;
+    background: url(../images/logo.jpg) no-repeat center/cover;
     width: 100%;
     height: 60%;
 }

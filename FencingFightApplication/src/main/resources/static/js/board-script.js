@@ -48,7 +48,7 @@ function setScore(score) {
     } else {
         scoreElement.innerHTML = '';
         for (var ind = 0; ind < score.newValue; ind++) {
-            scoreElement.innerHTML += "<img class='warning_image' src='images/warning.png' alt='Предупреждение'>";
+            scoreElement.innerHTML += "<img class='warning_image' src='/images/warning.png' alt='Предупреждение'>";
         }
     }
 }
@@ -57,7 +57,7 @@ function setMutualHitCount(mutual_hit_count) {
     var mutual_hit_countElement = document.getElementById('mutual_hit');
     mutual_hit_countElement.innerHTML = '';
     for (var ind = 0; ind < mutual_hit_count.newMutualHitCount; ind++) {
-        mutual_hit_countElement.innerHTML += "<img class='mutual_hit_image' src='images/mutual_hit.png' alt='Обоюдное поражение'>";
+        mutual_hit_countElement.innerHTML += "<img class='mutual_hit_image' src='/images/mutual_hit.png' alt='Обоюдное поражение'>";
     }
 }
 
