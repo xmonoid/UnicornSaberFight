@@ -1,5 +1,7 @@
 
 spring:
+  application:
+    name: Fencing Fight Application
   h2:
     console:
       enabled: true # Gives us access to the H2 database web console
@@ -15,3 +17,13 @@ spring:
     hibernate:
       ddl-auto: update # Generates the database *only* if it's not there yet
       dialect: org.hibernate.dialect.H2Dialect
+
+---
+spring:
+  profiles: test
+  datasource:
+    url: jdbc:h2:file:~/dbFileTest
+    initialization-mode: always
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
