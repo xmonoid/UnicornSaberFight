@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>List of fighters</title>
+</head>
+<body>
+<table class="table">
+    <thead>
+        <tr>
+            <th> First name </th>
+            <th> Last name </th>
+            <th> Club </th>
+            <th> Points </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:if="${fighters.empty}">
+            <td colspan="2"> No Fighters Available </td>
+        </tr>
+        <tr th:each="fighter : ${fighters}">
+            <td><span th:text="${fighter.firstName}"> First name </span></td>
+            <td><span th:text="${fighter.lastName}"> Last name </span></td>
+            <td><span th:text="${fighter.club}"> Club </span></td>
+            <td><span th:text="${fighter.points}"> Points </span></td>
+        </tr>
+    </tbody>
+</table>
+
+<script src="/webjars/jquery/3.3.1-1/jquery.min.js"></script>
+<script src="/webjars/popper.js/1.14.3/popper.min.js"></script>
+<script src="/webjars/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>

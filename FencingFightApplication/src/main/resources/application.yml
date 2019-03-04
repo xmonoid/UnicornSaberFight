@@ -17,6 +17,11 @@ spring:
     hibernate:
       ddl-auto: update # Generates the database *only* if it's not there yet
       dialect: org.hibernate.dialect.H2Dialect
+  thymeleaf:
+    cache: false
+    enabled: true
+    prefix: classpath:/templates/
+    suffix: .html
 
 ---
 spring:
