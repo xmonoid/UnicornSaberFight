@@ -3,6 +3,7 @@ package vrn.edinorog.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -11,6 +12,7 @@ import vrn.edinorog.dao.FighterRepository;
 import vrn.edinorog.dao.NominationRepository;
 import vrn.edinorog.domain.Duel;
 import vrn.edinorog.domain.Fighter;
+import vrn.edinorog.exception.ApplicationException;
 
 import java.util.List;
 import java.util.Set;
@@ -32,7 +34,8 @@ public class FighterService {
     @Transactional
     public void addNewFighter(Fighter fighter) {
         log.debug("#addNewFighter(Fighter fighter): {}", fighter);
-        Assert.notNull(fighter, "Fighter must be not null!");
+        validateFighterFields(fighter);
+        fillFieldNullValue(fighter);
         fighterRepository.save(fighter);
     }
 
@@ -40,13 +43,20 @@ public class FighterService {
     public void addNewFighters(List<Fighter> fighters) {
         log.debug("#addNewFighters(List<Fighter> fighters): {}", fighters);
         Assert.isTrue(CollectionUtils.isNotEmpty(fighters), "Fighters must be not empty");
+
+        for (Fighter fighter : fighters) {
+            validateFighterFields(fighter);
+            fillFieldNullValue(fighter);
+        }
+
         fighterRepository.saveAll(fighters);
     }
 
     @Transactional
     public void updateFighterPersonalData(Fighter fighter) {
         log.debug("#updateFighterPersonalData(Fighter fighter): {}", fighter);
-        Assert.notNull(fighter, "Fighter must be not null!");
+        validateFighterFields(fighter);
+        fillFieldNullValue(fighter);
         fighterRepository.updateFighterPersonalData(fighter);
     }
 
@@ -62,6 +72,8 @@ public class FighterService {
         log.debug("#updateFighterNominations(Long nominationId, List<String> nominationIds): {}, {}", fighterId, nominationIds);
         Assert.notNull(fighterId, "Fighter id must be not null!");
         Assert.notNull(nominationIds, "Nomination ids collection must be not null!");
+        nominationIds.remove(null);
+
         fighterRepository.deleteAllNominationLinksOfFighter(fighterId);
 
         Set<Long> existedNominationIds = nominationRepository.findAllIds();
@@ -74,22 +86,51 @@ public class FighterService {
     }
 
     @Transactional
-    public void deleteFighter(Long fighterId, boolean isDeactivate, boolean cascadeDelete) {
-        log.debug("#deleteFighter(Long fighterId, boolean isDeactivate): {}, {}", fighterId, isDeactivate);
+    public void updateFighterStatus(Long fighterId, boolean isActive) {
+        log.debug("#updateFighterStatus(Long fighterId, boolean isActive): {}, {}", fighterId, isActive);
         Assert.notNull(fighterId, "Fighter id must be not null!");
-        if (isDeactivate) {
-            fighterRepository.updateFighterStatus(fighterId, false);
-        } else if (cascadeDelete) {
-            Fighter fighter = fighterRepository.getOne(fighterId);
+        fighterRepository.updateFighterStatus(fighterId, isActive);
+    }
 
-            List<Duel> duels = duelRepository.findByRedFighterOrBlueFighter(fighter, fighter);
+    @Transactional
+    public void deleteFighter(Long fighterId, boolean cascadeDelete) {
+        log.debug("#deleteFighter(Long fighterId, boolean cascadeDelete): {}, {}", fighterId, cascadeDelete);
+        Assert.notNull(fighterId, "Fighter id must be not null!");
+
+        Fighter fighter = fighterRepository.getOne(fighterId);
+        List<Duel> duels = duelRepository.findByRedFighterOrBlueFighter(fighter, fighter);
+
+        if (CollectionUtils.isNotEmpty(duels) && !cascadeDelete) {
+            throw new ApplicationException(
+                    "Fighter wasn't be deleted, because there are duels related with it",
+                    "Удалить участника и все сражения, в которых он участвовал?"
+            );
+        }
+
+        if (cascadeDelete) {
             duelRepository.deleteInBatch(duels);
+        }
 
-            fighterRepository.deleteAllNominationLinksOfFighter(fighterId);
-            fighterRepository.deleteById(fighterId);
-        } else {
-            fighterRepository.deleteAllNominationLinksOfFighter(fighterId);
-            fighterRepository.deleteById(fighterId);
+        fighterRepository.deleteAllNominationLinksOfFighter(fighterId);
+        fighterRepository.deleteById(fighterId);
+    }
+
+    private void validateFighterFields(Fighter fighter) {
+        Assert.notNull(fighter, "Fighter must be not null!");
+        Assert.isTrue(StringUtils.isNoneBlank(fighter.getFirstName()), "First name must be not blank!");
+        Assert.isTrue(StringUtils.isNoneBlank(fighter.getLastName()), "Last name must be not blank!");
+        Assert.isTrue(StringUtils.isNoneBlank(fighter.getParentName()), "Parent name must be not blank!");
+        Assert.notNull(fighter.getSex(), "Sex must be not blank!");
+        Assert.notNull(fighter.getBirthDate(), "Birth date must be not blank!");
+    }
+
+    private void fillFieldNullValue(Fighter fighter) {
+        if (StringUtils.isBlank(fighter.getClub())) {
+            fighter.setClub(null);
+        }
+
+        if (StringUtils.isBlank(fighter.getCity())) {
+            fighter.setCity(null);
         }
     }
 

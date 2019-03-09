@@ -29,25 +29,29 @@ public class Fighter {
     private final String parentName;
     private final Boolean sex; // true is male, false is female
     private final Long birthDate; // Unix date time
-    private final String club;
-    private final String city;
+    @Setter
+    private String club;
+    @Setter
+    private String city;
 
     @ManyToMany
     @JoinColumn(name = "NOMINATION_ID")
     private final Set<Nomination> nominations;
 
-    @Setter
-    private Integer points;
     @Enumerated(EnumType.STRING)
     @Column(length = 10)
     @Setter
-    private Achievement medalAchievement;
+    private Achievement medalAchievement = Achievement.NONE;
     @Enumerated(EnumType.STRING)
     @Column(length = 10)
     @Setter
-    private Achievement cupAchievement;
+    private Achievement cupAchievement = Achievement.NONE;
     @Setter
-    private Boolean isActive = true; // it is false when a fighter has at least one fight, but he cannot continue to take part
+    private Boolean isActive = false; // it is false when a fighter has at least one fight, but he cannot continue to take part
+
+    @Setter
+    @Transient
+    private Integer points = 0;
 
     @Setter
     @Transient

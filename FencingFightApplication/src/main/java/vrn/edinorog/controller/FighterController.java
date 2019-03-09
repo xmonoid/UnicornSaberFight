@@ -7,7 +7,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import vrn.edinorog.domain.Fighter;
 import vrn.edinorog.domain.Nomination;
+import vrn.edinorog.dto.DeleteObjectDto;
 import vrn.edinorog.dto.ResponseDto;
+import vrn.edinorog.exception.ApplicationException;
 import vrn.edinorog.service.FighterService;
 import vrn.edinorog.service.NominationService;
 
@@ -38,9 +40,9 @@ public class FighterController {
     )
     @ResponseBody
     public ResponseDto addNewFighter(@RequestBody Fighter fighter) {
-        log.debug("POST /management/add, RequestBody {}", fighter);
+        log.debug("POST /fighter/add, RequestBody {}", fighter);
         fighterService.addNewFighter(fighter);
-        return ResponseDto.create().message("Fighter was successfully added");
+        return ResponseDto.create().message("Участник успешно добавлен");
     }
 
     @PostMapping(
@@ -50,9 +52,9 @@ public class FighterController {
     )
     @ResponseBody
     public ResponseDto addNewFighters(@RequestBody List<Fighter> fighters) {
-        log.debug("POST /management/add-all, RequestBody {}", fighters);
+        log.debug("POST /fighter/add-all, RequestBody {}", fighters);
         fighterService.addNewFighters(fighters);
-        return ResponseDto.create().message("Fighters were successfully added");
+        return ResponseDto.create().message("Участники успешно добавлены");
     }
 
     @PostMapping(
@@ -62,9 +64,9 @@ public class FighterController {
     )
     @ResponseBody
     public ResponseDto updatePersonalData(@RequestBody Fighter fighter) {
-        log.debug("POST /management/update-personal-data, RequestBody {}", fighter);
+        log.debug("POST /fighter/update-personal-data, RequestBody {}", fighter);
         fighterService.updateFighterPersonalData(fighter);
-        return ResponseDto.create().message("Fighter personal data were successfully update");
+        return ResponseDto.create().message("Личные данные участника успешно изменены");
     }
 
     @PostMapping(
@@ -74,9 +76,25 @@ public class FighterController {
     )
     @ResponseBody
     public ResponseDto updateFighterCompetitionData(@RequestBody Fighter fighter) {
-        log.debug("POST /management/update-competition-data, RequestBody {}", fighter);
+        log.debug("POST /fighter/update-competition-data, RequestBody {}", fighter);
         fighterService.updateFighterCompetitionData(fighter);
         return ResponseDto.create().message("Fighter competition data were successfully update");
+    }
+
+    @PostMapping(
+            path = "/{id}/update-fighter-status",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    @ResponseBody
+    public ResponseDto updateFighterStatus(@PathVariable("id") Long fighterId, @RequestBody boolean isActive) {
+        log.debug("POST /fighter/{}/update-fighter-status, RequestBody {}", fighterId, isActive);
+        fighterService.updateFighterStatus(fighterId, isActive);
+        if (isActive) {
+            return ResponseDto.create().message("Участие бойца подтверждено");
+        } else {
+            return ResponseDto.create().message("Участие бойца не подтверждено");
+        }
     }
 
     @PostMapping(
@@ -86,9 +104,28 @@ public class FighterController {
     )
     @ResponseBody
     public ResponseDto updateNominations(@PathVariable("id") Long fighterId, @RequestBody List<Long> nominationIds) {
-        log.debug("POST /management/{}/update-nominations, RequestBody {}", fighterId, nominationIds);
+        log.debug("POST /fighter/{}/update-nominations, RequestBody {}", fighterId, nominationIds);
         fighterService.updateFighterNominations(fighterId, nominationIds);
-        return ResponseDto.create().message("Fighter nominations were successfully update");
+        return ResponseDto.create().message("Список номинаций успешно изменен");
+    }
+
+    @DeleteMapping(
+            path = "/delete",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    @ResponseBody
+    public ResponseDto deleteFighter(@RequestBody DeleteObjectDto deleteObjectDto) {
+        log.debug("DELETE /fighter/delete, RequestBody {}", deleteObjectDto);
+        try {
+            fighterService.deleteFighter(
+                    deleteObjectDto.getObjectId(),
+                    deleteObjectDto.getCascadeDelete() != null ? deleteObjectDto.getCascadeDelete() : false
+            );
+            return ResponseDto.create().message("Участник успешно удалена");
+        } catch (ApplicationException ex) {
+            return ResponseDto.create().exception(ex).message(ex.getMessage());
+        }
     }
 
 }

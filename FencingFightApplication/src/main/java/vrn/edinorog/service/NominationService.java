@@ -12,7 +12,9 @@ import vrn.edinorog.dao.NominationRepository;
 import vrn.edinorog.domain.Duel;
 import vrn.edinorog.domain.Nomination;
 import vrn.edinorog.enums.CompetitionStage;
+import vrn.edinorog.exception.ApplicationException;
 
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -32,6 +34,7 @@ public class NominationService {
     public void addNewNomination(Nomination nomination) {
         log.debug("#addNewNomination(Nomination nomination): {}", nomination);
         Assert.notNull(nomination, "Nomination must be not null!");
+        Assert.isTrue(StringUtils.isNoneBlank(nomination.getName()), "Name must be not blank!");
         nominationRepository.save(nomination);
     }
 
@@ -39,6 +42,10 @@ public class NominationService {
     public void addNewNominations(List<Nomination> nominations) {
         log.debug("#addNewNominations(List<Nomination> nominations): {}", nominations);
         Assert.notNull(nominations, "Nominations list must be not null!");
+        for (Nomination nomination : nominations) {
+            Assert.isTrue(StringUtils.isNoneBlank(nomination.getName()), "Name must be not blank!");
+        }
+
         nominationRepository.saveAll(nominations);
     }
 
@@ -62,21 +69,24 @@ public class NominationService {
 
     @Transactional
     public void deleteNomination(Long nominationId, boolean cascadeDelete) {
-        log.debug("#deleteNomination(Long nominationId): {}, {}", nominationId);
+        log.debug("#deleteNomination(Long nominationId): {}, {}", nominationId, cascadeDelete);
         Assert.notNull(nominationId, "Nomination id must be not null!");
 
-        if (cascadeDelete) {
-            Nomination nomination = nominationRepository.getOne(nominationId);
+        Nomination nomination = nominationRepository.getOne(nominationId);
+        List<Duel> duels = duelRepository.findByNomination(nomination);
 
-            List<Duel> duels = duelRepository.findByNomination(nomination);
-            duelRepository.deleteInBatch(duels);
-
-            nominationRepository.deleteAllFighterLinksOfNomination(nominationId);
-            nominationRepository.deleteById(nominationId);
-        } else {
-            nominationRepository.deleteAllFighterLinksOfNomination(nominationId);
-            nominationRepository.deleteById(nominationId);
+        if (CollectionUtils.isNotEmpty(duels) && !cascadeDelete) {
+            throw new ApplicationException(
+                    "Nomination wasn't be deleted, because there are duels related with it",
+                    "Удалить номинацию и все сражения в ней?"
+            );
         }
-    }
 
+        if (cascadeDelete) {
+            duelRepository.deleteInBatch(duels);
+        }
+
+        nominationRepository.deleteAllFighterLinksOfNomination(nominationId);
+        nominationRepository.deleteById(nominationId);
+    }
 }

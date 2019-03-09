@@ -14,5 +14,5 @@ import vrn.edinorog.service.NominationService;
 @Controller
 @RequestMapping("/management")
 public class ManagementController {
-    
+
 }

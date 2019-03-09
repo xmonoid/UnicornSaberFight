@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Management Page</title>
+    <link rel="stylesheet" href="../external/jquery-confirm-v3.3.4/jquery-confirm.min.css">
+    <link rel="stylesheet" href="../external/jquery.bootgrid-1.3.1/jquery.bootgrid.min.css">
+    <link rel="stylesheet" href="/webjars/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body>
+
+    <br>
+    <div class="container">
+        <ul class="nav nav-tabs" role="tablist">
+            <li><a href="#nominations-tab" role="tab" data-toggle="tab">Номинации</a></li>
+            <li><a href="#fighters-tab" role="tab" data-toggle="tab">Участники</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade" id="nominations-tab">
+                <br>
+                <button id="add-new-nomination-dialog-btn" class="btn btn-info pull-right" data-toggle="modal" data-target="#nomination-model-dialog">Добавить номинацию</button>
+                <table id="nominations-table" class="table table-condensed table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th data-visible="false" data-column-id="id">Id</th>
+                        <th data-column-id="name">Название номинации</th>
+                        <th data-column-id="currentStageTitle" data-sortable="false">Текущий этап соревнований</th>
+                        <th data-column-id="currentRoundIndex" data-sortable="false">Номер круга</th>
+                        <th data-column-id="commands" data-formatter="commands" data-sortable="false"></th>
+                    </tr>
+                    </thead>
+                </table>
+
+                <div id="nomination-model-dialog" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" aria-label="Close">&times;</button>
+                                <h4 class="modal-title">Номинация</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form id="nomination-form" onsubmit="return false">
+                                    <div class="form-group" hidden>
+                                        <input id="nomination-id" class="form-control" name="id" type="text">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="nomination-name">Название номинации:</label>
+                                        <input id="nomination-name" class="form-control" name="title" required type="text">
+                                    </div>
+                                    <button id="save-nomination-btn" class="btn btn-success">Сохранить</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div role="tabpanel" class="tab-pane fade" id="fighters-tab">
+                <br>
+
+                <button id="add-new-fighter-dialog-btn" class="btn btn-info pull-right" data-toggle="modal" data-target="#fighter-model-dialog">Добавить участника</button>
+                <button id="load-fighters-btn" class="btn btn-info pull-right">Загрузить бойцов из Google таблицы</button>
+                <table id="fighters-table" class="table table-condensed table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th data-visible="false" data-column-id="id">Id</th>
+                        <th data-column-id="lastName">Фамилия</th>
+                        <th data-column-id="firstName">Имя</th>
+                        <th data-column-id="parentName">Отчество</th>
+                        <th data-column-id="sex" data-converter="booleanToStr">Пол</th>
+                        <th data-column-id="birthDate" data-converter="longToDateStr">Дата рождения</th>
+                        <th data-column-id="club">Клуб</th>
+                        <th data-column-id="city">Город</th>
+                        <th data-column-id="nominations" data-formatter="nominations">Номинации</th>
+                        <th data-column-id="isActive" data-formatter="activeStatus">Статус</th>
+                        <th data-column-id="commands" data-formatter="commands" data-sortable="false"></th>
+                    </tr>
+                    </thead>
+                </table>
+
+                <div id="fighter-model-dialog" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" aria-label="Close">&times;</button>
+                                <h4 class="modal-title">Участник</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form id="fighter-form" onsubmit="return false">
+                                    <div class="form-group" hidden>
+                                        <input id="fighter-id" class="form-control" name="id" type="text">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="lastName">Фамилия:</label>
+                                        <input id="lastName" class="form-control" name="lastName" required type="text">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="firstName">Имя:</label>
+                                        <input id="firstName" class="form-control" name="firstName" required type="text">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="parentName">Отчество:</label>
+                                        <input id="parentName" class="form-control" name="parentName" type="text">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Пол:</label>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="sex" required value="Муж">Муж
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="sex" required value="Жен">Жен
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="birthDate">Дата рождения:</label>
+                                        <input id="birthDate" class="form-control" name="birthDate" required type="date">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="city">Город:</label>
+                                        <input id="city" class="form-control" name="city" type="text">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="club">Клуб:</label>
+                                        <input id="club" class="form-control" name="club" type="text">
+                                    </div>
+                                    <div id="nominations-block" class="form-group">
+                                        <label for="nominations-selector">Номинации</label>
+                                        <select id="nominations-selector" name="nominationsSelector" multiple class="form-control"></select>
+                                    </div>
+                                    <button id="save-fighter-btn" class="btn btn-success">Сохранить</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="fighter-nominations-model-dialog" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" aria-label="Close">&times;</button>
+                                <h4 class="modal-title">Список номинаций</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form id="fighter-nominations-form" onsubmit="return false">
+                                    <div class="form-group">
+                                        <label id="fighter-full-name" class="form-control" name="fighter-full-name"></label>
+                                    </div>
+                                    <div class="form-group" hidden>
+                                        <input class="form-control" name="id" type="text">
+                                    </div>
+                                    <div id="fighter-nominations-block" class="form-group">
+                                        <label for="nominations-selector">Номинации</label>
+                                        <select id="fighter-nominations-selector" name="nominationsSelector" multiple class="form-control"></select>
+                                    </div>
+                                    <button id="save-fighter-nominations-btn" class="btn btn-success">Сохранить</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="/webjars/jquery/3.3.1-1/jquery.min.js"></script>
+    <script src="/webjars/jquery-ui/1.12.1/jquery-ui.js"></script>
+    <script src="../external/jquery.bootgrid-1.3.1/jquery.bootgrid.min.js"></script>
+    <script src="../external/jquery-confirm-v3.3.4/jquery-confirm.min.js"></script>
+    <script src="/webjars/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="../js/management-script.js"></script>
+    <script src="../js/utils.js"></script>
+</body>
+</html>

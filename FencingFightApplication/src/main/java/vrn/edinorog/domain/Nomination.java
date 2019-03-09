@@ -24,8 +24,8 @@ public class Nomination {
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     @Setter
-    private CompetitionStage currentStage;
+    private CompetitionStage currentStage = CompetitionStage.QUALIFYING_STAGE;
 
     @Setter
-    private Integer currentRoundIndex;
+    private Integer currentRoundIndex = 0;
 }

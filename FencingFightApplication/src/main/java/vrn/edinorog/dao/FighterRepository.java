@@ -22,8 +22,7 @@ public interface FighterRepository extends JpaRepository<Fighter, Long> {
 
     @Modifying
     @Query("update Fighter " +
-            "set points = :#{#fighter.points}, " +
-                "medalAchievement = :#{#fighter.medalAchievement}, " +
+            "set medalAchievement = :#{#fighter.medalAchievement}, " +
                 "cupAchievement = :#{#fighter.cupAchievement} " +
             "where fighter_id = :#{#fighter.id}")
     void updateFighterCompetitionData(@Param("fighter") Fighter fighter);
