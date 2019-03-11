@@ -14,6 +14,5 @@ import lombok.ToString;
 public class ChangeScoreDto {
 
     private String fighter;
-    private String kind;
     private int newValue;
 }

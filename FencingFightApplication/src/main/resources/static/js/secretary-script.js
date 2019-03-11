@@ -16,57 +16,26 @@ function disconnect() {
     }
 }
 
-function add_point(fighter, kind, addition, evt) {
+function add_point(fighter, addition, evt) {
     if (evt && evt.screenX === 0 && evt.screenY === 0) {
         return;
     }
 
     var number_field
     if (fighter == 'red') {
-        if (kind == 'score') {
-            number_field = document.getElementById('red-score')
-        } else {
-            number_field = document.getElementById('red-warning')
-        }
+        number_field = document.getElementById('red-score')
     } else {
-        if (kind == 'score') {
-            number_field = document.getElementById('blue-score')
-        } else {
-            number_field = document.getElementById('blue-warning')
-        }
+        number_field = document.getElementById('blue-score')
     }
     var score = new Number(number_field.innerHTML)
     score += addition
 
     score = score >= 0 ? score : 0;
 
-    if (kind === 'warning') {
-        score = score < 7 ? score : 6;
-    }
-
     number_field.innerHTML = score.toString()
     stompClient.send("/fencing-fight-app/secretary/change-score", {}, JSON.stringify({
         fighter: fighter,
-        kind: kind,
         newValue: score
-    }));
-}
-
-function add_mutual_hit(addition, evt) {
-    if (evt && evt.screenX === 0 && evt.screenY === 0) {
-        return;
-    }
-
-    var mutual_hit_count_field = document.getElementById('mutual_hit');
-    var mutual_hit_count = new Number(mutual_hit_count_field.innerHTML);
-    mutual_hit_count += addition;
-
-    mutual_hit_count = mutual_hit_count >= 0 ? mutual_hit_count : 0;
-    mutual_hit_count = mutual_hit_count <= 4 ? mutual_hit_count : 4;
-
-    mutual_hit_count_field.innerHTML = mutual_hit_count.toString();
-    stompClient.send("/fencing-fight-app/secretary/change-mutual-hit-count", {}, JSON.stringify({
-        newMutualHitCount: mutual_hit_count
     }));
 }
 
@@ -94,13 +63,10 @@ function default_values() {
     document.getElementById('time').innerHTML = '02:00'
     document.getElementById('start_stop_time_button').value = 'Старт время'
     document.getElementById('start_stop_fight_button').value = 'Начать бой'
-    document.getElementById('mutual_hit').innerHTML = '0'
     document.getElementById('red_name').value = ''
     document.getElementById('blue_name').value = ''
     document.getElementById('red-score').innerHTML = '0'
-    document.getElementById('red-warning').innerHTML = '0'
     document.getElementById('blue-score').innerHTML = '0'
-    document.getElementById('blue-warning').innerHTML = '0'
 
     set_disabled_all_elements_by_class('add_button');
     set_disabled_all_elements_by_class('start_stop_time');
@@ -130,22 +96,16 @@ $(document).ready(function() {
                 pressed_timer(document.getElementById('start_stop_time_button'));
                 break;
             case 81: // q
-                add_point('blue', 'score', 1);
+                add_point('blue', 1);
                 break;
             case 65: // a
-                add_point('blue', 'score', -1);
+                add_point('blue', -1);
                 break;
             case 69: // e
-                add_point('red', 'score', 1);
+                add_point('red', 1);
                 break;
             case 68: // d
-                add_point('red', 'score', -1);
-                break;
-            case 84: // t
-                add_mutual_hit(1);
-                break;
-            case 71: // g
-                add_mutual_hit(-1);
+                add_point('red', -1);
                 break;
 
             case 73: // i
@@ -346,26 +306,11 @@ function start_stop_fight(evt) {
 
         stompClient.send("/fencing-fight-app/secretary/change-score", {}, JSON.stringify({
             fighter: 'red',
-            kind: 'score',
-            newValue: document.getElementById('red-score').innerHTML
-        }));
-        stompClient.send("/fencing-fight-app/secretary/change-score", {}, JSON.stringify({
-            fighter: 'red',
-            kind: 'warning',
             newValue: document.getElementById('red-score').innerHTML
         }));
         stompClient.send("/fencing-fight-app/secretary/change-score", {}, JSON.stringify({
             fighter: 'blue',
-            kind: 'score',
             newValue: document.getElementById('red-score').innerHTML
-        }));
-        stompClient.send("/fencing-fight-app/secretary/change-score", {}, JSON.stringify({
-            fighter: 'blue',
-            kind: 'warning',
-            newValue: document.getElementById('red-score').innerHTML
-        }));
-        stompClient.send("/fencing-fight-app/secretary/change-mutual-hit-count", {}, JSON.stringify({
-            newMutualHitCount: document.getElementById('mutual_hit').innerHTML
         }));
 
         button.value = 'Закончить бой'
