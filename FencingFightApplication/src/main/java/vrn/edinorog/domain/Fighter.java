@@ -34,7 +34,7 @@ public class Fighter {
     @Setter
     private String city;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "NOMINATION_ID")
     private final Set<Nomination> nominations;
 
@@ -55,11 +55,15 @@ public class Fighter {
 
     @Setter
     @Transient
-    private Set<String> fighterIdFromTheSameClub;
+    private Set<Long> fighterIdFromTheSameClub;
 
     @Setter
     @Transient
-    private Set<String> rivalIds;
+    private Set<Long> rivalIds;
+
+    public void incPoints(int value) {
+        points += value;
+    }
 
     public enum Achievement {
 

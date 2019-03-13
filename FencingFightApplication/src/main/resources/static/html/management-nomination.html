@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Management Page</title>
+    <link rel="stylesheet" href="../../external/jquery-confirm-v3.3.4/jquery-confirm.min.css">
+    <link rel="stylesheet" href="../../external/jquery.bootgrid-1.3.1/jquery.bootgrid.min.css">
+    <link rel="stylesheet" href="/webjars/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body>
+    <br>
+    <div class="container-fluid">
+        <h2 id="nomination-name" class="text-center"></h2>
+        <div class="row">
+            <div class="col-md-6">
+                <h3 id="current-state">Текущий эпат: </h3>
+            </div>
+            <div class="col-md-6">
+                <h3 id="current-round">Текущий круг: </h3>
+            </div>
+        </div>
+        <ul class="nav nav-tabs" role="tablist">
+            <li><a href="#fighters-tab" role="tab" data-toggle="tab">Участники</a></li>
+            <li><a href="#duels-tab" role="tab" data-toggle="tab">Бои</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade" id="fighters-tab">
+                <br>
+                <table id="fighters-table" class="table table-condensed table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th data-visible="false" data-column-id="id">Id</th>
+                        <th data-column-id="lastName">Фамилия</th>
+                        <th data-column-id="firstName">Имя</th>
+                        <th data-column-id="parentName">Отчество</th>
+                        <th data-column-id="club">Клуб</th>
+                        <th data-column-id="city">Город</th>
+                        <th data-column-id="points" data-formatter="activeStatus">Очки</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+
+            <div role="tabpanel" class="tab-pane fade" id="duels-tab">
+                <br>
+                <button id="create-duels-btn" class="btn btn-info">Развести пары для нового круга</button>
+                <button id="load-duels-btn" class="btn btn-info">Загрузить пары текущего круга</button>
+                <br>
+                <div class="row">
+                    <h4 class="text-center">Площадка номер 1</h4>
+                </div>
+                <table id="duels-playground-1-table" class="table table-condensed table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th data-visible="false" data-column-id="id">Id</th>
+                        <th data-column-id="redFighterName">Красный боец</th>
+                        <th data-column-id="redScore">Очки кр. бойца</th>
+                        <th data-column-id="blueScore">Очки син. бойца</th>
+                        <th data-column-id="blueFighterName">Синий боец</th>
+                        <th data-column-id="duelStatus" data-converter="duelStatus">Статус</th>
+                    </tr>
+                    </thead>
+                </table>
+
+                <br>
+                <div class="row">
+                    <h4 class="text-center">Площадка номер 2</h4>
+                </div>
+                <table id="duels-playground-2-table" class="table table-condensed table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th data-visible="false" data-column-id="id">Id</th>
+                        <th data-column-id="redFighterName">Красный боец</th>
+                        <th data-column-id="redScore">Очки кр. бойца</th>
+                        <th data-column-id="blueScore">Очки син. бойца</th>
+                        <th data-column-id="blueFighterName">Синий боец</th>
+                        <th data-column-id="duelStatus" data-converter="duelStatus">Статус</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+
+<script src="/webjars/jquery/3.3.1-1/jquery.min.js"></script>
+<script src="/webjars/jquery-ui/1.12.1/jquery-ui.js"></script>
+<script src="../../external/jquery.bootgrid-1.3.1/jquery.bootgrid.min.js"></script>
+<script src="../../external/jquery-confirm-v3.3.4/jquery-confirm.min.js"></script>
+<script src="/webjars/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="../../js/management-nomination-script.js"></script>
+<script src="../../js/utils.js"></script>
+</body>
+</html>

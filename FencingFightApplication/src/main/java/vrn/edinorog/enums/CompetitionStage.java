@@ -4,6 +4,7 @@ public enum CompetitionStage {
 
     INIT_STAGE("Этап инициализации"), // only for splitting
     QUALIFYING_STAGE("Отборочный этап"),
+    ADDITIONAL_DUELS("Дополнительные бои"),
     PLAY_OFF_STAGE("Плей-офф"),
     SEMI_FINALl("Полуфинал"),
     THIRD_FINAL("Бой за третье место"),

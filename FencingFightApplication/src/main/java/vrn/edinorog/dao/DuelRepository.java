@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import vrn.edinorog.domain.Duel;
 import vrn.edinorog.domain.Fighter;
 import vrn.edinorog.domain.Nomination;
+import vrn.edinorog.enums.CompetitionStage;
 
 import java.util.List;
 
@@ -28,7 +29,7 @@ public interface DuelRepository extends JpaRepository<Duel, Long> {
             "set redScore = :#{#duel.redScore}, " +
                 "blueScore = :#{#duel.blueScore}, " +
                 "mutualHitCount = :#{#duel.mutualHitCount}, " +
-                "winner = :#{#duel.winner} " +
+                "result = :#{#duel.result} " +
             "where duel_id = :#{#duel.id}")
     void updateDuelResult(@Param("duel") Duel duel);
 
@@ -41,5 +42,11 @@ public interface DuelRepository extends JpaRepository<Duel, Long> {
     List<Duel> findByRedFighterOrBlueFighter(Fighter redFighter, Fighter blueFighter);
 
     List<Duel> findByNomination(Nomination nomination);
+
+    List<Duel> findAllByNominationAndCurrentStageAndCurrentRoundIndex(Nomination nomination, CompetitionStage competitionStage, Integer currentRoundIndex);
+
+    List<Duel> findAllByNominationAndCurrentStage(Nomination nomination, CompetitionStage competitionStage);
+
+    List<Duel> findAllByNominationAndDuelStatus(Nomination nomination, Duel.DuelStatus duelStatus);
 
 }

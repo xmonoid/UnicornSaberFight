@@ -12,9 +12,11 @@ import vrn.edinorog.dao.FighterRepository;
 import vrn.edinorog.dao.NominationRepository;
 import vrn.edinorog.domain.Duel;
 import vrn.edinorog.domain.Fighter;
+import vrn.edinorog.domain.Nomination;
 import vrn.edinorog.exception.ApplicationException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
@@ -29,6 +31,12 @@ public class FighterService {
     public List<Fighter> getAllFighters() {
         log.debug("#getAllFighters()");
         return fighterRepository.findAll();
+    }
+
+    public List<Fighter> getFightersByNomination(Nomination nomination) {
+        log.debug("#getFightersByNomination(Nomination nomination), {}", nomination);
+        Assert.notNull(nomination, "Nomination must be not null!");
+        return fighterRepository.findAllByNominationsContainsAndIsActive(nomination, true);
     }
 
     @Transactional
@@ -89,6 +97,21 @@ public class FighterService {
     public void updateFighterStatus(Long fighterId, boolean isActive) {
         log.debug("#updateFighterStatus(Long fighterId, boolean isActive): {}, {}", fighterId, isActive);
         Assert.notNull(fighterId, "Fighter id must be not null!");
+
+        Optional<Fighter> fighter = fighterRepository.findById(fighterId);
+
+        if (!fighter.isPresent()) {
+            throw new ApplicationException(
+                    "Участник с id " + fighterId + " не найден!"
+            );
+        }
+
+        if (CollectionUtils.isEmpty(fighter.get().getNominations()) && isActive) {
+            throw new ApplicationException(
+                    "Подтвердить участие бойца нельзя, так как не выбрана ни одна номинация!"
+            );
+        }
+
         fighterRepository.updateFighterStatus(fighterId, isActive);
     }
 
@@ -97,8 +120,15 @@ public class FighterService {
         log.debug("#deleteFighter(Long fighterId, boolean cascadeDelete): {}, {}", fighterId, cascadeDelete);
         Assert.notNull(fighterId, "Fighter id must be not null!");
 
-        Fighter fighter = fighterRepository.getOne(fighterId);
-        List<Duel> duels = duelRepository.findByRedFighterOrBlueFighter(fighter, fighter);
+        Optional<Fighter> fighter = fighterRepository.findById(fighterId);
+
+        if (!fighter.isPresent()) {
+            throw new ApplicationException(
+                    "Участник с id " + fighterId + " не найден!"
+            );
+        }
+
+        List<Duel> duels = duelRepository.findByRedFighterOrBlueFighter(fighter.get(), fighter.get());
 
         if (CollectionUtils.isNotEmpty(duels) && !cascadeDelete) {
             throw new ApplicationException(

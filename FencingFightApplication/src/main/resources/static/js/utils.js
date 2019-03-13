@@ -10,6 +10,8 @@ function getTitleFromCompetitionStage(competitionStage) {
     switch (competitionStage) {
         case "QUALIFYING_STAGE":
             return "Отборочный этап";
+        case "ADDITIONAL_DUELS":
+            return "Дополнительные бои";
         case "PLAY_OFF_STAGE":
             return "Плей-офф";
         case "SEMI_FINALl":
@@ -23,20 +25,29 @@ function getTitleFromCompetitionStage(competitionStage) {
     }
 }
 
-function getCompetionStageByTitle(title) {
-    switch (title) {
-        case "Отборочный этап":
-            return "QUALIFYING_STAGE";
-        case "Плей-офф":
-            return "PLAY_OFF_STAGE";
-        case "Полуфинал":
-            return "SEMI_FINALl";
-        case "Бой за третье место":
-            return "THIRD_FINAL";
-        case "Финал":
-            return "FINAL";
+function getTitleFromDuelStatus(duelStatus) {
+    switch (duelStatus) {
+        case "UNFINISHED":
+            return "Не завершен";
+        case "FINISHED":
+            return "Завершен";
+        case "CANCELED":
+            return "Отменен";
         default:
             return "";
+    }
+}
+
+function getDuelStatusByTitle(title) {
+    switch (title) {
+        case "Не завершен":
+            return "UNFINISHED";
+        case "Завершен":
+            return "FINISHED";
+        case "Отменен":
+            return "CANCELED";
+        default:
+            return null;
     }
 }
 

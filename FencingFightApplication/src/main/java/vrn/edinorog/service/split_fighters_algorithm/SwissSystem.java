@@ -1,5 +1,6 @@
 package vrn.edinorog.service.split_fighters_algorithm;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.springframework.stereotype.Service;
 import vrn.edinorog.domain.Fighter;
@@ -11,9 +12,8 @@ import java.util.*;
 @Service
 public class SwissSystem {
 
-    public List<MutablePair<Fighter, Fighter>> getFighterPairs(List<Fighter> fighters, Fighter skippedRoundFighter, boolean isStrongSkipRound) {
-        List<Fighter> tempFighters = new ArrayList<>();
-        Collections.copy(tempFighters, fighters);
+    public List<MutablePair<Fighter, Fighter>> getFighterPairs(List<Fighter> fighters, List<Fighter> skippedRoundFighters, boolean isStrongSkipRound) {
+        List<Fighter> tempFighters = new ArrayList<>(fighters);
 
         int score = tempFighters.get(0).getPoints();
         boolean isNonRating = true;
@@ -28,7 +28,7 @@ public class SwissSystem {
         if (isNonRating) {
             return getRandomFighterPairs(tempFighters);
         } else {
-            return getByRatingFighterPairs(tempFighters, skippedRoundFighter, isStrongSkipRound);
+            return getByRatingFighterPairs(tempFighters, skippedRoundFighters, isStrongSkipRound);
         }
     }
 
@@ -39,10 +39,12 @@ public class SwissSystem {
         return fightersPairs;
     }
 
-    private List<MutablePair<Fighter, Fighter>> getByRatingFighterPairs(List<Fighter> fighters, Fighter skippedRoundFighter, boolean isStrongSkipRound) {
+    private List<MutablePair<Fighter, Fighter>> getByRatingFighterPairs(List<Fighter> fighters, List<Fighter> skippedRoundFighters, boolean isStrongSkipRound) {
         List<MutablePair<Fighter, Fighter>> fightersPairs = new ArrayList<>();
-        if (skippedRoundFighter != null) {
-            fighters.remove(skippedRoundFighter);
+        if (CollectionUtils.isNotEmpty(skippedRoundFighters)) {
+            for (Fighter fighter : skippedRoundFighters) {
+                fighters.remove(fighter);
+            }
         }
 
         Map<Integer, List<Fighter>> scoreToListFighterMap = new HashMap<>();
@@ -65,10 +67,17 @@ public class SwissSystem {
             scoreToListFighterMap.get(scores.get(0)).remove(fighterForSkip);
         }
 
-        if (skippedRoundFighter != null) {
-            scoreToListFighterMap.get(scores.get(0)).add(skippedRoundFighter);
-            scoreToListFighterMap.get(scores.get(scores.size() - 1)).add(skippedRoundFighter);
+        if (CollectionUtils.isNotEmpty(skippedRoundFighters)) {
+            for (Fighter fighter : skippedRoundFighters) {
+                scoreToListFighterMap.get(scores.get(0)).add(fighter);
+                scoreToListFighterMap.get(scores.get(scores.size() - 1)).add(fighter);
+            }
         }
+
+//        if (skippedRoundFighter != null) {
+//            scoreToListFighterMap.get(scores.get(0)).add(skippedRoundFighter);
+//            scoreToListFighterMap.get(scores.get(scores.size() - 1)).add(skippedRoundFighter);
+//        }
 
         List<Fighter> fightersFromAnotherGroup = new ArrayList<>();
         for (int scoreInd = 0; scoreInd < scores.size(); scoreInd++) {

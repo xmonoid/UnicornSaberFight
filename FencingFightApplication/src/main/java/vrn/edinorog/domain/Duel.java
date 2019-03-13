@@ -24,15 +24,17 @@ public class Duel {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "RED_FIGHTER_ID")
     private final Fighter redFighter;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "BLUE_FIGHTER_ID")
     private final Fighter blueFighter;
 
-    private final Integer duelGroupId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Setter
+    private Integer duelGroupId;
 
     private final Integer duelRound;
 
@@ -47,26 +49,26 @@ public class Duel {
     private final int currentRoundIndex;
 
     @Setter
-    private Integer redScore;
+    private Integer redScore = 0;
     @Setter
-    private Integer blueScore;
+    private Integer blueScore = 0;
     @Setter
     private Integer mutualHitCount;
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     @Setter
-    private Winner winner;
+    private Winner result;
     @Enumerated(EnumType.STRING)
     @Column(length = 12)
     @Setter
-    private DuelStatus duelStatus;
+    private DuelStatus duelStatus = DuelStatus.UNFINISHED;
 
     public Fighter getWinner() {
-        if (winner == null || duelStatus == null || !duelStatus.equals(DuelStatus.FINISHED)) {
+        if (result == null || duelStatus == null || !duelStatus.equals(DuelStatus.FINISHED)) {
             return null;
         }
 
-        switch (winner) {
+        switch (result) {
             case RED:
             case RED_TECHNICAL_WIN:
                 return redFighter;
@@ -82,11 +84,11 @@ public class Duel {
     }
 
     public Fighter getLoser() {
-        if (winner == null || duelStatus == null || !duelStatus.equals(DuelStatus.FINISHED)) {
+        if (result == null || duelStatus == null || !duelStatus.equals(DuelStatus.FINISHED)) {
             return null;
         }
 
-        switch (winner) {
+        switch (result) {
             case RED:
             case RED_TECHNICAL_WIN:
                 return blueFighter;
@@ -99,6 +101,32 @@ public class Duel {
         }
 
         return null;
+    }
+
+    public int getWinnerPoints () {
+        if (result == null) {
+            return 0;
+        }
+
+        if (result.equals(Winner.RED_TECHNICAL_WIN) || result.equals(Winner.BLUE_TECHNICAL_WIN)) {
+            return 2;
+        }
+
+        if (result.equals(Winner.RED) || result.equals(Winner.BLUE)) {
+
+            if (redScore == 0 || blueScore == 0) {
+                return 4;
+            }
+
+            if (Math.abs(redScore - blueScore) > 6) {
+                return 4;
+            }
+
+            return 3;
+
+        }
+
+        return 0;
     }
 
     public enum Winner {

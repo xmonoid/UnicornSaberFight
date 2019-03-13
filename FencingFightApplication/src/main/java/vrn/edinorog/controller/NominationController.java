@@ -31,6 +31,16 @@ public class NominationController {
         return ResponseDto.create().data(nominationService.getAllNominations());
     }
 
+    @GetMapping(
+            path = "/{id}",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    @ResponseBody
+    public ResponseDto getNominationById(@PathVariable("id") Long id) {
+        log.debug("GET /nomination/{}", id);
+        return ResponseDto.create().data(nominationService.getNominationById(id));
+    }
+
     @PostMapping(
             path = "/add",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE,

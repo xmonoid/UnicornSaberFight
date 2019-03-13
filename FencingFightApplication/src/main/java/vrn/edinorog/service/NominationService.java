@@ -16,6 +16,7 @@ import vrn.edinorog.exception.ApplicationException;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @AllArgsConstructor
@@ -28,6 +29,19 @@ public class NominationService {
     public List<Nomination> getAllNominations() {
         log.debug("#getAllNominations()");
         return nominationRepository.findAll();
+    }
+
+    public Nomination getNominationById(Long id) {
+        log.debug("#getNominationById(Long id), {}", id);
+        Optional<Nomination> nomination = nominationRepository.findById(id);
+
+        if (!nomination.isPresent()) {
+            throw new ApplicationException(
+                    "Номинация с id " + id + " не найдена!"
+            );
+        }
+
+        return nomination.get();
     }
 
     @Transactional
@@ -72,8 +86,15 @@ public class NominationService {
         log.debug("#deleteNomination(Long nominationId): {}, {}", nominationId, cascadeDelete);
         Assert.notNull(nominationId, "Nomination id must be not null!");
 
-        Nomination nomination = nominationRepository.getOne(nominationId);
-        List<Duel> duels = duelRepository.findByNomination(nomination);
+        Optional<Nomination> nomination = nominationRepository.findById(nominationId);
+
+        if (!nomination.isPresent()) {
+            throw new ApplicationException(
+                    "Номинация с id " + nominationId + " не найдена!"
+            );
+        }
+
+        List<Duel> duels = duelRepository.findByNomination(nomination.get());
 
         if (CollectionUtils.isNotEmpty(duels) && !cascadeDelete) {
             throw new ApplicationException(

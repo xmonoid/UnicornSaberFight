@@ -31,7 +31,8 @@ var nominationsTable = $("#nominations-table").bootgrid({
     formatters: {
         "commands": function (column, row) {
             return "<button type=\"button\" class=\"btn btn-default btn-success command-edit\" data-row-id=" + row.id + "><i class=\"glyphicon glyphicon-pencil\"></i></button> " +
-                "<button type=\"button\" class=\"btn btn-default btn-danger command-delete\" data-row-id=" + row.id + "><i class=\"glyphicon glyphicon-trash\"></i></button>";
+                "<button type=\"button\" class=\"btn btn-default btn-danger command-delete\" data-row-id=" + row.id + "><i class=\"glyphicon glyphicon-trash\"></i></button> " +
+                "<a type=\"button\" class=\"btn btn-default btn-info command-details\" data-row-id=" + row.id + "><i class=\"glyphicon glyphicon-cog\"></i></a>";
         }
     }
 }).on("loaded.rs.jquery.bootgrid", function () {
@@ -45,6 +46,9 @@ var nominationsTable = $("#nominations-table").bootgrid({
         deleteNomination($(this).data("row-id"), false, function () {
             fillNominationsTable();
         });
+    }).end().find(".command-details").on("click", function (evt) {
+        var app = "/management/" + $(this).data("row-id") + "/nomination"
+        $(location).attr('href',app)
     });
 });
 
@@ -267,8 +271,8 @@ var fightersTable = $("#fighters-table").bootgrid({
     formatters: {
         "commands": function (column, row) {
             return "<div class=\"btn-group-vertical\" data-toggle=\"buttons\"><button type=\"button\" class=\"btn btn-default btn-success command-edit\" data-row-id=" + row.id + "><i class=\"glyphicon glyphicon-pencil\"></i></button> " +
-                "<button type=\"button\" class=\"btn btn-default btn-info command-change-status\" data-row-id=" + row.id + "><i class=\"glyphicon glyphicon-transfer\"></i></button></div>" +
-                "<div class=\"btn-group-vertical\" data-toggle=\"buttons\"><button type=\"button\" class=\"btn btn-default btn-success command-change-nominations\" data-row-id=" + row.id + "><i class=\"glyphicon glyphicon-list-alt\"></i></button>" +
+                "<button type=\"button\" class=\"btn btn-default btn-info command-change-status\" data-row-id=" + row.id + "><i class=\"glyphicon glyphicon-transfer\"></i></button></div> " +
+                "<div class=\"btn-group-vertical\" data-toggle=\"buttons\"><button type=\"button\" class=\"btn btn-default btn-success command-change-nominations\" data-row-id=" + row.id + "><i class=\"glyphicon glyphicon-list-alt\"></i></button> " +
                 "<button type=\"button\" class=\"btn btn-default btn-danger command-delete\" data-row-id=" + row.id + "><i class=\"glyphicon glyphicon-trash\"></i></button></div>";
         },
         "nominations": function (column, row) {
@@ -401,7 +405,12 @@ function changeActiveStatus(id, isActive, callback) {
         "processData": false,
         "data": JSON.stringify(isActive)
     }).done(function (response) {
-        responseSuccessHandling(response);
+        if (response.exception) {
+            responseErrorHandling(response);
+        } else {
+            responseSuccessHandling(response);
+        }
+
         if (callback) {
             callback();
         }

@@ -89,11 +89,15 @@ public class FighterController {
     @ResponseBody
     public ResponseDto updateFighterStatus(@PathVariable("id") Long fighterId, @RequestBody boolean isActive) {
         log.debug("POST /fighter/{}/update-fighter-status, RequestBody {}", fighterId, isActive);
-        fighterService.updateFighterStatus(fighterId, isActive);
-        if (isActive) {
-            return ResponseDto.create().message("Участие бойца подтверждено");
-        } else {
-            return ResponseDto.create().message("Участие бойца не подтверждено");
+        try {
+            fighterService.updateFighterStatus(fighterId, isActive);
+            if (isActive) {
+                return ResponseDto.create().message("Участие бойца подтверждено");
+            } else {
+                return ResponseDto.create().message("Участие бойца не подтверждено");
+            }
+        } catch (ApplicationException ex) {
+            return ResponseDto.create().exception(ex).message(ex.getMessage());
         }
     }
 

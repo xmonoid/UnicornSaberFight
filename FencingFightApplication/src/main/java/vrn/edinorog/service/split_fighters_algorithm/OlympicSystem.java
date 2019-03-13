@@ -14,7 +14,7 @@ public class OlympicSystem {
     public List<MutablePair<Fighter, Fighter>> getFighterPairs(List<Fighter> fighters, List<Duel> semiFinalDuels, boolean isNeedValidation) {
         List<Fighter> tempFighters = new ArrayList<>();
         if (fighters != null) {
-            Collections.copy(tempFighters, fighters);
+            tempFighters = new ArrayList<>(fighters);
         }
 
         if(isNeedValidation && tempFighters.size() > 0) {

@@ -5,6 +5,9 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import vrn.edinorog.domain.Fighter;
+import vrn.edinorog.domain.Nomination;
+
+import java.util.List;
 
 public interface FighterRepository extends JpaRepository<Fighter, Long> {
 
@@ -43,4 +46,5 @@ public interface FighterRepository extends JpaRepository<Fighter, Long> {
     @Query("update Fighter set isActive = :isActive where fighter_id = :fighterId")
     void updateFighterStatus(@Param("fighterId") Long fighterId, @Param("isActive") boolean isActive);
 
+    List<Fighter> findAllByNominationsContainsAndIsActive(Nomination nomination, boolean isActive);
 }
