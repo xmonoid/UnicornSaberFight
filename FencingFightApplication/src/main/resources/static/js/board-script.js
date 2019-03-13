@@ -13,9 +13,6 @@ function connect() {
         stompClient.subscribe('/fight-information/fencing-fight-app/board/set-names', function (names) {
             setNames(JSON.parse(names.body));
         });
-        stompClient.subscribe('/fight-information/fencing-fight-app/board/change-mutual-hit-count', function (score) {
-            setMutualHitCount(JSON.parse(score.body));
-        });
     });
 }
 
@@ -28,37 +25,14 @@ function disconnect() {
 function setScore(score) {
     var scoreElement;
     if (score.fighter === 'red') {
-        if (score.kind === 'score') {
-            scoreElement = document.getElementById('red-score');
-        } else {
-            scoreElement = document.getElementById('red-warning');
-        }
+        scoreElement = document.getElementById('red-score');
     } else if (score.fighter === 'blue') {
-        if (score.kind === 'score') {
-            scoreElement = document.getElementById('blue-score');
-        } else {
-            scoreElement = document.getElementById('blue-warning');
-        }
+        scoreElement = document.getElementById('blue-score');
     } else {
         scoreElement = null;
     }
 
-    if (score.kind === 'score') {
-        scoreElement.innerHTML = score.newValue;
-    } else {
-        scoreElement.innerHTML = '';
-        for (var ind = 0; ind < score.newValue; ind++) {
-            scoreElement.innerHTML += "<img class='warning_image' src='/images/warning.png' alt='Предупреждение'>";
-        }
-    }
-}
-
-function setMutualHitCount(mutual_hit_count) {
-    var mutual_hit_countElement = document.getElementById('mutual_hit');
-    mutual_hit_countElement.innerHTML = '';
-    for (var ind = 0; ind < mutual_hit_count.newMutualHitCount; ind++) {
-        mutual_hit_countElement.innerHTML += "<img class='mutual_hit_image' src='/images/mutual_hit.png' alt='Обоюдное поражение'>";
-    }
+    scoreElement.innerHTML = score.newValue;
 }
 
 function setTime(time) {

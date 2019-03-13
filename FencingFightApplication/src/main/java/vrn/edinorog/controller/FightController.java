@@ -29,10 +29,4 @@ public class FightController {
     public NamesDto setNames(NamesDto namesDto) {
         return namesDto;
     }
-
-    @MessageMapping("/secretary/change-mutual-hit-count")
-    @SendTo("/fight-information/fencing-fight-app/board/change-mutual-hit-count")
-    public ChangeMutualHitCountDto changeMitualHitCount(ChangeMutualHitCountDto changeMutualHitCountDto) {
-        return changeMutualHitCountDto;
-    }
 }
