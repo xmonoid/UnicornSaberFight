@@ -1,16 +1,25 @@
 var stompClient = null;
+var pageId = null;
 
 function connect() {
+    const urlParams = new URLSearchParams(window.location.search);
+    pageId = urlParams.get('id');
+
+    if (pageId == null) {
+        alert('There is no page ID. Please, add a value ?id=<id> manually and reload the page!');
+        return
+    }
+
     var socket = new SockJS(window.location.origin + '/fencing-fight-app-websocket');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
-        stompClient.subscribe('/fight-information/fencing-fight-app/board/change-score', function (score) {
+        stompClient.subscribe('/fight-information/fencing-fight-app/board/change-score/' + pageId, function (score) {
             setScore(JSON.parse(score.body));
         });
-        stompClient.subscribe('/fight-information/fencing-fight-app/board/change-time', function (time) {
+        stompClient.subscribe('/fight-information/fencing-fight-app/board/change-time/' + pageId, function (time) {
             setTime(JSON.parse(time.body));
         });
-        stompClient.subscribe('/fight-information/fencing-fight-app/board/set-names', function (names) {
+        stompClient.subscribe('/fight-information/fencing-fight-app/board/set-names/' + pageId, function (names) {
             setNames(JSON.parse(names.body));
         });
     });

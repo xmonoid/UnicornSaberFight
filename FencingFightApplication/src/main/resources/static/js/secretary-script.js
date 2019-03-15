@@ -2,8 +2,17 @@ var timerId = null;
 var stompClient = null;
 var canEditScore = false;
 var disableKeypressHandling = false;
+var pageId = null;
 
 function connect() {
+    const urlParams = new URLSearchParams(window.location.search);
+    pageId = urlParams.get('id');
+
+    if (pageId == null) {
+        alert('There is no page ID. Please, add a value ?id=<id> manually and reload the page!');
+        return
+    }
+
     var socket = new SockJS(window.location.origin + '/fencing-fight-app-websocket');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {});
@@ -33,14 +42,14 @@ function add_point(fighter, addition, evt) {
     score = score >= 0 ? score : 0;
 
     number_field.innerHTML = score.toString()
-    stompClient.send("/fencing-fight-app/secretary/change-score", {}, JSON.stringify({
+    stompClient.send("/fencing-fight-app/secretary/change-score/" + pageId, {}, JSON.stringify({
         fighter: fighter,
         newValue: score
     }));
 }
 
 function send_time(time) {
-    stompClient.send("/fencing-fight-app/secretary/change-time", {}, JSON.stringify({
+    stompClient.send("/fencing-fight-app/secretary/change-time/" + pageId, {}, JSON.stringify({
         time: time
     }));
 }
@@ -298,17 +307,17 @@ function start_stop_fight(evt) {
         canEditScore = true;
 
 
-        stompClient.send("/fencing-fight-app/secretary/set-names", {}, JSON.stringify({
+        stompClient.send("/fencing-fight-app/secretary/set-names/" + pageId, {}, JSON.stringify({
             redName: document.getElementById('red_name').value,
             blueName: document.getElementById('blue_name').value
         }));
         send_time(document.getElementById('time').innerHTML)
 
-        stompClient.send("/fencing-fight-app/secretary/change-score", {}, JSON.stringify({
+        stompClient.send("/fencing-fight-app/secretary/change-score/" + pageId, {}, JSON.stringify({
             fighter: 'red',
             newValue: document.getElementById('red-score').innerHTML
         }));
-        stompClient.send("/fencing-fight-app/secretary/change-score", {}, JSON.stringify({
+        stompClient.send("/fencing-fight-app/secretary/change-score/" + pageId, {}, JSON.stringify({
             fighter: 'blue',
             newValue: document.getElementById('red-score').innerHTML
         }));
